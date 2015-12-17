@@ -11,10 +11,6 @@ serve-dev:
 poll:
 	DEBUG=1 python backend/src/poller.py
 
-backup:
-	ansible-playbook ansible/db_backup.yml -i ansible/inventory
-	scp nuc:/opt/windlogger/data.db.bak ./data.db
-
 deploy:
 	ansible-playbook ansible/windlogger.yml -i ansible/inventory
 
