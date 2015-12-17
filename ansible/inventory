@@ -1,0 +1,7 @@
+nuc         ansible_ssh_user=jon
+
+[webserver-nuc]
+nuc
+
+[webservers]
+nuc

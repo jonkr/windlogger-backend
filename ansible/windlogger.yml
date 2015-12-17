@@ -1,0 +1,9 @@
+- hosts: webservers
+  sudo: true
+  vars:
+    user: windlogger
+    app_dir: /opt/windlogger
+    socket_file: /tmp/gunicorn_windlogger.sock
+    DEBUG: false
+  roles:
+    - { role: app, tags: ['app'] }

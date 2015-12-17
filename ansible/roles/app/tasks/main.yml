@@ -1,0 +1,186 @@
+- name: read credentials from file
+  include_vars: "./../../../../credentials.json"
+  register: credentials
+
+- debug: var=credentials
+
+- name: install dependencies
+  apt:
+    pkg={{ item }}
+    state=installed
+    update_cache=true
+    cache_valid_time={{ 7*24*60*60}}
+  with_items:
+    - nginx
+    - supervisor
+    - python2.7-dev
+    - python-pip
+    - git
+    - libffi-dev
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev # Needed for the psycopg2 python postgres driver
+    - libffi-dev # Fix for InsecurePlatformWarning when installing requests in VM
+    - libssl-dev # Fix for InsecurePlatformWarning when installing requests in VM
+
+- name: install virtualenv
+  pip: name=virtualenv
+
+- name: create user
+  user: name="{{ user }}"
+
+- name: check if windlogger DB exists
+  command: "psql -l"
+  register: db_list
+  become: yes
+  become_user: postgres
+
+- debug: var=db_list
+
+- debug: var=db_list["stdout"]
+
+- name: create windlogger DB
+  command: createdb windlogger
+  become: yes
+  become_user: postgres
+  when: db_list["stdout"].find("windlogger") == -1
+
+- name: check if DB user exists
+  command: 'psql -c "SELECT rolname FROM pg_roles;"'
+  become: yes
+  become_user: postgres
+  register: db_roles
+
+- name: create DB user
+  command: psql -c "CREATE USER windlogger WITH PASSWORD '{{ credentials.ansible_facts.postgresPassword }}';"
+  become: yes
+  become_user: postgres
+  when: db_roles["stdout"].find("windlogger") == -1
+
+- name: add ssh key
+  copy:
+    src="app_key"
+    dest=/home/{{ user }}/id_rsa
+    owner={{ user }}
+    group={{ user }}
+    mode=0600
+
+- name: add ssh key public
+  copy:
+    src="app_key.pub"
+    dest=/home/{{ user }}/id_rsa.pub
+    owner={{ user }}
+    group={{ user }}
+    mode=0600
+
+- name: render supervisor config
+  template:
+    src=supervisor_windlogger.conf.j2
+    dest=/etc/supervisor/conf.d/windlogger.conf
+  notify:
+    - reread supervisor config
+    - update supervisor
+
+- name: add default nginx config
+  copy: src=nginx_main.conf dest=/etc/nginx/nginx.conf
+  notify:
+    - reload nginx
+
+- name: render nginx app config
+  template:
+    src=nginx_windlogger.conf.j2
+    dest=/etc/nginx/sites-available/windlogger.conf
+  notify:
+    - start nginx
+    - reload nginx
+
+- name: enable nginx config
+  file:
+    src=/etc/nginx/sites-available/windlogger.conf
+    dest=/etc/nginx/sites-enabled/windlogger.conf
+    state=link
+  tags: deploy
+  notify:
+    - reload nginx
+
+- name: disable nginx default site config
+  file:
+    path=/etc/nginx/sites-enabled/default
+    state=absent
+
+- name: download backend
+  git:
+    repo=git@bitbucket.org:jonkronander/windlogger.se.git
+    dest="{{ app_dir }}"
+    depth=1
+    accept_hostkey=yes
+    force=yes
+    key_file="/home/{{ user }}/id_rsa"
+  tags:
+    - deploy
+  notify:
+    - update supervisor
+    - start windlogger
+
+- name: download frontend
+  git:
+    repo=https://github.com/jonkr/windlogger-frontend.git
+    dest="{{ app_dir }}/frontend"
+    depth=1
+    accept_hostkey=yes
+    force=yes
+
+- name: set ownership on app dir
+  file:
+    path="{{ app_dir }}"
+    owner="{{ user }}"
+    recurse=yes
+  tags: deploy
+
+- name: render server run script
+  template:
+    src=RUN_SERVER.sh.j2
+    dest="{{ app_dir }}/RUN_SERVER.sh"
+    owner="{{ user }}"
+    mode=u+x
+
+- name: render db migration script
+  template:
+    src=RUN_MIGRATIONS.sh.j2
+    dest="{{ app_dir }}/RUN_MIGRATIONS.sh"
+    owner="{{ user }}"
+    mode=u+x
+
+- name: install extra pip packages for SSL-fix
+  pip:
+    name={{ item }}
+    virtualenv="{{ app_dir }}/venv"
+  with_items:
+    - pyopenssl
+    - ndg-httpsclient
+    - pyasn1
+
+- name: install python environment
+  pip:
+    requirements="{{ app_dir }}/backend/src/requirements.txt"
+    virtualenv="{{ app_dir }}/venv"
+
+- name: render index.html template
+  template:
+    src="./../backend/src/templates/index.html"
+    dest="{{ app_dir }}/frontend/build/index.html"
+
+- name: stop windlogger
+  supervisorctl: name="windlogger:" state=stopped
+  notify:
+    - start windlogger
+
+- name: run alembic migrations
+  command: "{{ app_dir }}/RUN_MIGRATIONS.sh"
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: start windlogger
+  supervisorctl:
+    name="windlogger:"
+    state=started

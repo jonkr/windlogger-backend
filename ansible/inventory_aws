@@ -1,0 +1,7 @@
+aws         ansible_ssh_user=ubuntu
+
+[webserver-aws]
+aws
+
+[webservers]
+aws

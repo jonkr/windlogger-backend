@@ -1,0 +1,12 @@
+.vagrant/
+.idea/
+logs/
+
+.DS_Store
+*.pyc
+.sass-cache/
+
+config_local.py
+db.dump
+
+credentials*

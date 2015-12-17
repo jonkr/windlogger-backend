@@ -1,0 +1,44 @@
+[group:windlogger]
+programs=windlogger-app,windlogger-poller-viva,windlogger-poller-weatherlink,windlogger-poller-smhi
+
+[program:windlogger-app]
+command={{ app_dir }}/RUN_SERVER.sh
+directory={{ app_dir }}
+user={{ user }}
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/windlogger.log
+loglevel=info
+
+[program:windlogger-poller-viva]
+command={{ app_dir }}/venv/bin/python backend/src/poller.py viva
+directory={{ app_dir }}
+user={{ user }}
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/windlogger-poller-viva.log
+loglevel=info
+stopasgroup=true
+killasgroup=true
+
+[program:windlogger-poller-smhi]
+command={{ app_dir }}/venv/bin/python backend/src/poller.py smhi
+directory={{ app_dir }}
+user={{ user }}
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/windlogger-poller-smhi.log
+loglevel=info
+stopasgroup=true
+killasgroup=true
+
+[program:windlogger-poller-weatherlink]
+command={{ app_dir }}/venv/bin/python backend/src/poller.py weatherlink
+directory={{ app_dir }}
+user={{ user }}
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/windlogger-poller-weatherlink.log
+loglevel=info
+stopasgroup=true
+killasgroup=true

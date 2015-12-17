@@ -1,0 +1,8 @@
+- hosts: aws
+  sudo: true
+  vars:
+    app_dir: /opt/windlogger
+  tasks:
+
+    - name: dump DB to file
+      command: pg_dump -d postgresql://windlogger:d6080db0e1654556a5560fe4aac2e0bc@localhost/windlogger -Fc -f /tmp/db.dump

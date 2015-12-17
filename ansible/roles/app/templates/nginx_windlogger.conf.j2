@@ -1,0 +1,41 @@
+upstream flask_server_windlogger {
+	server unix:{{ socket_file }} fail_timeout=0;
+}
+
+{% if domain != 'windlogger.se' %}
+server {
+	listen 80;
+	server_name www.{{ domain }};
+	return 301 $scheme://{{ domain }}$request_uri;
+}
+{% endif %}
+
+server {
+	listen 80;
+	client_max_body_size 4G;
+	server_name {{ domain }};
+
+	gzip on;
+	gzip_types *;
+
+	keepalive_timeout 5;
+
+	location /api {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+
+		if (!-f $request_filename) {
+			proxy_pass http://flask_server_windlogger;
+			break;
+		}
+	}
+
+	# paths for static files
+	location  / {
+		alias {{ app_dir }}/frontend/build/;
+		index index.html;
+		expires 120;
+	}
+
+}

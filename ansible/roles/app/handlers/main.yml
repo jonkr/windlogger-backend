@@ -1,0 +1,20 @@
+- name: reread supervisor config
+  command: /usr/bin/supervisorctl reread
+
+- name: update supervisor
+  command: /usr/bin/supervisorctl update
+
+- name: reload supervisor
+  command: /usr/bin/supervisorctl reload
+
+- name: start nginx
+  service: name=nginx state=started
+
+- name: reload nginx
+  service: name=nginx state=reloaded
+
+- name: start windlogger
+  supervisorctl: name="windlogger:" state=started
+
+- name: restart windlogger
+  supervisorctl: name="windlogger:" state=restarted

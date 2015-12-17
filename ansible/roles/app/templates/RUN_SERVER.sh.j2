@@ -1,0 +1,12 @@
+#!/bin/bash
+
+APP_DIR={{ app_dir }}
+VENV_DIR={{ app_dir }}/venv/bin
+WORKERS=4
+
+export PYTHONPATH=$APP_DIR/backend/src
+source $VENV_DIR/activate
+
+cd $APP_DIR
+
+exec $VENV_DIR/gunicorn server:app --bind unix:{{ socket_file }} -w $WORKERS
