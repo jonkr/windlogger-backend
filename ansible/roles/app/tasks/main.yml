@@ -95,7 +95,7 @@
 - name: download backend
   git:
     repo=https://github.com/jonkr/windlogger-backend.git
-    dest="{{ app_dir }}"
+    dest="{{ app_dir }}/backend"
     depth=1
     accept_hostkey=yes
     force=yes
