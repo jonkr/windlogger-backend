@@ -1,9 +1,9 @@
 run:
-	DEBUG=1 python server/server.py
+	DEBUG=1 python server/app.py
 
 # Run flask app without debug, but do serve static files
 run-as-prod:
-	APP_SERVE_STATIC=1 python server/server.py
+	APP_SERVE_STATIC=1 python server/app.py
 
 serve-dev:
 	gunicorn server:app --bind unix:/tmp/gunicorn_windlogger_dev.sock -w 4

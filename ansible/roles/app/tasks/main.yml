@@ -1,3 +1,6 @@
+- name: check if running as a vagrant box
+  debug: var=vagrant
+
 - name: read credentials from file
   include_vars: "./../credentials.json"
   register: credentials

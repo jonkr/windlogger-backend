@@ -1,12 +1,13 @@
 #!/bin/bash
 
 APP_DIR={{ app_dir }}
-VENV_DIR={{ app_dir }}/venv/bin
+VENV_DIR={{ app_dir }}/backend/venv/bin
 WORKERS=4
 
-export PYTHONPATH=$APP_DIR/backend/src
+export PYTHONPATH=$APP_DIR/backend
 source $VENV_DIR/activate
 
 cd $APP_DIR
 
-exec $VENV_DIR/gunicorn server:app --bind unix:{{ socket_file }} -w $WORKERS
+exec $VENV_DIR/gunicorn server.app:app --bind unix:{{ socket_file }} -w
+$WORKERS
