@@ -7,7 +7,7 @@ import bs4
 import requests
 import datetime
 
-from models.wind import Sensor, Sample
+from models import Sensor, Sample
 import db
 
 KMPH_2_MPS = 0.277778

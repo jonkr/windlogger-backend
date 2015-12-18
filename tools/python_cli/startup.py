@@ -1,4 +1,4 @@
-from models.wind import Sensor, Sample
+from models import Sensor, Sample
 
 import db
 

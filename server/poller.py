@@ -9,7 +9,7 @@ import traceback
 
 import db
 import utils
-from models.wind import Sensor
+from models import Sensor
 import poller_viva, poller_weatherlink, poller_smhi
 
 logging.basicConfig(

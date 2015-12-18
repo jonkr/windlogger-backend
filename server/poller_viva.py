@@ -9,7 +9,7 @@ import datetime
 import requests
 
 import db
-from models.wind import Sensor, Sample
+from models import Sensor, Sample
 
 log = logging.getLogger(__name__)
 

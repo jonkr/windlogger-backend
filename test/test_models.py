@@ -3,7 +3,7 @@
 
 from test.base import TestBase
 
-from models.wind import Sample, Sensor
+from models import Sample, Sensor
 
 class TestSensorSample(TestBase):
 
