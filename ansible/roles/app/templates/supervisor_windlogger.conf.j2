@@ -2,8 +2,8 @@
 programs=windlogger-app,windlogger-poller-viva,windlogger-poller-weatherlink,windlogger-poller-smhi
 
 [program:windlogger-app]
-command={{ app_dir }}/RUN_SERVER.sh
-directory={{ app_dir }}
+command={{ app_dir }}/backend/RUN_SERVER.sh
+directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
 redirect_stderr=true
@@ -11,8 +11,8 @@ stdout_logfile=/var/log/windlogger.log
 loglevel=info
 
 [program:windlogger-poller-viva]
-command={{ app_dir }}/venv/bin/python backend/src/poller.py viva
-directory={{ app_dir }}
+command={{ app_dir }}/backend/venv/bin/python server/poller.py viva
+directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
 redirect_stderr=true
@@ -22,8 +22,8 @@ stopasgroup=true
 killasgroup=true
 
 [program:windlogger-poller-smhi]
-command={{ app_dir }}/venv/bin/python backend/src/poller.py smhi
-directory={{ app_dir }}
+command={{ app_dir }}/backend/venv/bin/python server/poller.py smhi
+directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
 redirect_stderr=true
@@ -33,8 +33,8 @@ stopasgroup=true
 killasgroup=true
 
 [program:windlogger-poller-weatherlink]
-command={{ app_dir }}/venv/bin/python backend/src/poller.py weatherlink
-directory={{ app_dir }}
+command={{ app_dir }}/backend/venv/bin/python server/poller.py weatherlink
+directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
 redirect_stderr=true

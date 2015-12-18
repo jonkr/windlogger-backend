@@ -126,14 +126,14 @@
 - name: render server run script
   template:
     src=RUN_SERVER.sh.j2
-    dest="{{ app_dir }}/RUN_SERVER.sh"
+    dest="{{ app_dir }}/backend/RUN_SERVER.sh"
     owner="{{ user }}"
     mode=u+x
 
 - name: render db migration script
   template:
     src=RUN_MIGRATIONS.sh.j2
-    dest="{{ app_dir }}/RUN_MIGRATIONS.sh"
+    dest="{{ app_dir }}/backend/RUN_MIGRATIONS.sh"
     owner="{{ user }}"
     mode=u+x
 
@@ -165,13 +165,13 @@
 - name: render alembic ini
   template:
     src="alembic.ini.j2"
-    dest="{{ app_dir }}/alembic.ini"
+    dest="{{ app_dir }}/backend/alembic.ini"
     owner="{{ user }}"
 
 - name: run alembic migrations
-  command: "{{ app_dir }}/RUN_MIGRATIONS.sh"
+  command: "{{ app_dir }}/backend/RUN_MIGRATIONS.sh"
   args:
-    chdir: "{{ app_dir }}"
+    chdir: "{{ app_dir }}/backend"
 
 - name: start windlogger
   supervisorctl:
