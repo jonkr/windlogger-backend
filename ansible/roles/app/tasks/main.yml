@@ -25,6 +25,8 @@
     - libpq-dev # Needed for the psycopg2 python postgres driver
     - libffi-dev # Fix for InsecurePlatformWarning when installing requests in VM
     - libssl-dev # Fix for InsecurePlatformWarning when installing requests in VM
+  notify:
+    - start nginx
 
 - name: install virtualenv
   pip: name=virtualenv
@@ -78,7 +80,6 @@
     src=nginx_windlogger.conf.j2
     dest=/etc/nginx/sites-available/windlogger.conf
   notify:
-    - start nginx
     - reload nginx
 
 - name: enable nginx config

@@ -13,6 +13,9 @@
 - name: reload nginx
   service: name=nginx state=reloaded
 
+- name: restart nginx
+  service: name=nginx state=restarted
+
 - name: start windlogger
   supervisorctl: name="windlogger:" state=started
 
