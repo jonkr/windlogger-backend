@@ -1,5 +1,5 @@
 - name: read credentials from file
-  include_vars: "./../../../../credentials.json"
+  include_vars: "./../credentials.json"
   register: credentials
 
 - debug: var=credentials
@@ -57,22 +57,6 @@
   become_user: postgres
   when: db_roles["stdout"].find("windlogger") == -1
 
-- name: add ssh key
-  copy:
-    src="./../../../../credentials_ssh"
-    dest=/home/{{ user }}/id_rsa
-    owner={{ user }}
-    group={{ user }}
-    mode=0600
-
-- name: add ssh key public
-  copy:
-    src="./../../../../credentials_ssh.pub"
-    dest=/home/{{ user }}/id_rsa.pub
-    owner={{ user }}
-    group={{ user }}
-    mode=0600
-
 - name: render supervisor config
   template:
     src=supervisor_windlogger.conf.j2
@@ -110,12 +94,11 @@
 
 - name: download backend
   git:
-    repo=git@bitbucket.org:jonkronander/windlogger.se.git
+    repo=https://github.com/jonkr/windlogger-backend.git
     dest="{{ app_dir }}"
     depth=1
     accept_hostkey=yes
     force=yes
-    key_file="/home/{{ user }}/id_rsa"
   tags:
     - deploy
   notify:
@@ -154,7 +137,7 @@
 - name: install extra pip packages for SSL-fix
   pip:
     name={{ item }}
-    virtualenv="{{ app_dir }}/venv"
+    virtualenv="{{ app_dir }}/backend/venv"
   with_items:
     - pyopenssl
     - ndg-httpsclient
@@ -162,13 +145,8 @@
 
 - name: install python environment
   pip:
-    requirements="{{ app_dir }}/backend/src/requirements.txt"
-    virtualenv="{{ app_dir }}/venv"
-
-- name: render index.html template
-  template:
-    src="./../backend/src/templates/index.html"
-    dest="{{ app_dir }}/frontend/build/index.html"
+    requirements="{{ app_dir }}/backend/requirements.prod"
+    virtualenv="{{ app_dir }}/backend/venv"
 
 - name: stop windlogger
   supervisorctl: name="windlogger:" state=stopped
