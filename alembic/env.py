@@ -13,8 +13,8 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from db import Base
-from models import *
+from server.db import Base
+from server.models import *
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
