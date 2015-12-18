@@ -8,9 +8,9 @@ import datetime
 from sqlalchemy import (Column, Integer, DateTime, String, Float, ForeignKey,
 						PickleType, Boolean)
 
-from server.db import Base
+from db import Base
 from sqlalchemy.orm import relationship
-import server.errors as errors
+import errors
 
 
 log = logging.getLogger(__name__)

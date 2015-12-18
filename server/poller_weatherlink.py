@@ -76,7 +76,7 @@ def get_html(url):
 
 
 def get_body(html_data):
-	root = bs4.BeautifulSoup(html_data)
+	root = bs4.BeautifulSoup(html_data, 'html.parser')
 	body = root.find('body')
 	assert body, 'No body!'
 	return body
