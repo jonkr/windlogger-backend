@@ -9,5 +9,4 @@ source $VENV_DIR/activate
 
 cd $APP_DIR
 
-exec $VENV_DIR/gunicorn server.app:app --bind unix:{{ socket_file }} -w
-$WORKERS
+exec $VENV_DIR/gunicorn server.app:app --bind unix:{{ socket_file }} -w $WORKERS
