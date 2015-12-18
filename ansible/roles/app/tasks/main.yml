@@ -108,6 +108,11 @@
     - update supervisor
     - start windlogger
 
+- name: copy credentials file
+  copy:
+    src="./../credentials.json"
+    dest="{{ app_dir }}/backend"
+
 - name: download frontend
   git:
     repo=https://github.com/jonkr/windlogger-frontend.git
