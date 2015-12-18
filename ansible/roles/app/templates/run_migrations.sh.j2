@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-export PYTHONPATH={{ app_dir }}/backend
+export PYTHONPATH={{ app_dir }}/backend/server
 source {{ app_dir }}/backend/venv/bin/activate && alembic upgrade head
