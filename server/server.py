@@ -91,19 +91,6 @@ def custom_response_headers(response):
 	return response
 
 
-if config.DEBUG or config.APP_SERVE_STATIC:
-
-	@app.route('/')
-	def serve_index():
-		return render_template('index.html', DEBUG=config.DEBUG)
-
-
-	@app.route('/<path:path>')
-	def serve_files(path):
-		return send_from_directory(
-			config.relative('./../../frontend/build'), path)
-
-
 def parse_int(str, default=2):
 	try:
 		return int(str)
@@ -132,5 +119,6 @@ def filter_sensor_coords(query, coord_scope):
 
 
 if __name__ == '__main__':
+
 	app.run(debug=config.DEBUG, host='0.0.0.0')
 	

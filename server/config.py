@@ -6,7 +6,7 @@ def relative(path):
 		__file__)), path))
 
 def read_credentials():
-	return json.load(open(relative('./../../credentials.json')))
+	return json.load(open(relative('./../credentials.json')))
 
 CREDENTIALS = read_credentials()
 

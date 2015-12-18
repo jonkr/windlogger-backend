@@ -11,7 +11,7 @@ import itertools
 from geopy.distance import distance
 
 import db
-from models import Sensor, Sample
+from models import Sensor
 
 PRIORITY = {
 	Sensor.TYPES[Sensor.TYPE_VIVA]: 3,        # the most reliable and frequent

@@ -7,7 +7,6 @@ import logging
 import datetime
 
 import requests
-from suds.client import Client
 
 import db
 from models.wind import Sensor, Sample
