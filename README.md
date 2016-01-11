@@ -12,4 +12,4 @@ TBW: How to run the test suite.
 
 ## Deploy
 TBW: How to deploy the backend to the production environment.
-NOTE: Require SSH access.	
+NOTE: Requires SSH access.	
