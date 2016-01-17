@@ -1,7 +1,5 @@
 - hosts: aws
   sudo: true
-  vars:
-    app_dir: /opt/windlogger
   tasks:
 
     - name: dump DB to file
