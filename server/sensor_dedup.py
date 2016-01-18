@@ -31,7 +31,7 @@ def pick_sensor_w_fewest_samples(s1, s2):
 		return s2
 	elif s1.id < s2.id:
 		print 'Sensor {} and {} appear equal, picking the one with the ' \
-		      'highest ID: {}'.format(s1, s2, s2.id)
+		      'highest ID: {}'.format(s1.id, s2.id, s2.id)
 		return s2
 	raise Exception('Could not pick conclusively decide which sensor '
 	                'to hide')
