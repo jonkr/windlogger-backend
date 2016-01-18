@@ -30,11 +30,11 @@ def pick_sensor_w_fewest_samples(s1, s2):
 	elif s2.recent_count < s1.recent_count:
 		return s2
 	elif s1.id < s2.id:
-		print 'Sensor {} and {} appear equal, picking the one with the ' \
-		      'highest ID: {}'.format(s1.id, s2.id, s2.id)
 		return s2
-	raise Exception('Could not pick conclusively decide which sensor '
-	                'to hide')
+	elif s2.id < s1.id:
+		return s1
+	else:
+		raise Exception('Sensor is compared with itself')
 
 
 def pick_sensor_w_lowest_priority(s1, s2):
