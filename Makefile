@@ -12,7 +12,7 @@ poll:
 	DEBUG=1 python server/poller.py
 
 deploy:
-	ansible-playbook ansible/windlogger.yml -i ansible/inventory_aws
+	ansible-playbook ansible/windlogger.yml -i ansible/inventory
 
 cli:
 	PYTHONPATH=server PYTHONSTARTUP=tools/python_cli/startup.py bpython
