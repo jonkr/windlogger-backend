@@ -21,8 +21,8 @@ test-fast:
 	PYTHONPATH=server py.test test
 
 clone-db:
-	ansible-playbook ansible/db_backup.yml -i ansible/inventory_aws
-	scp aws:/tmp/db.dump .
+	ansible-playbook ansible/db_backup.yml -i ansible/inventory
+	scp awsnano:/tmp/db.dump .
 
 populate-db-from-dump:
 	dropdb windlogger

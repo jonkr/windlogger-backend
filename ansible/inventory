@@ -1,7 +1,7 @@
-nuc         ansible_ssh_user=jon
+awsnano         ansible_ssh_user=ubuntu
 
-[webserver-nuc]
-nuc
+[webserver-aws]
+awsnano
 
 [webservers]
-nuc
+awsnano

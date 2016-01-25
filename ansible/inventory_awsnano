@@ -1,7 +1,0 @@
-awsnano         ansible_ssh_user=ubuntu
-
-[webserver-aws]
-awsnano
-
-[webservers]
-awsnano
