@@ -28,6 +28,7 @@ def catch_exceptions(job_func):
 		try:
 			job_func(*args, **kwargs)
 		except Exception as e:
+			db.get_session().rollback()
 			print(traceback.format_exc())
 			log.exception('Error when polling')
 			if type(e) not in notified_errors:
