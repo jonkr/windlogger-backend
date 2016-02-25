@@ -17,10 +17,10 @@ DB_URI = 'postgresql+psycopg2://{user}:{password}@localhost/{db}'.format(
 	user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
 
 DEBUG = 'DEBUG' in os.environ
-print 'DEBUG:%s'%DEBUG
+print('DEBUG:%s'%DEBUG)
 
 APP_SERVE_STATIC = 'APP_SERVE_STATIC' in os.environ
-print 'APP_SERVE_STATIC:%s'%APP_SERVE_STATIC
+print('APP_SERVE_STATIC:%s'%APP_SERVE_STATIC)
 
 POLL_PERIOD = 120
 
@@ -33,7 +33,7 @@ MAILGUN_API_KEY = CREDENTIALS['mailGunApiKey']
 # ADD/OVERWRITE WITH MACHINE LOCAL CONFIGS
 try:
 	from config_local import *
-except ImportError, e:
-	print "No local config file found. If you want to override configs for " \
-		  "this machine, create /src/server/config_local.py"
+except ImportError as e:
+	print("No local config file found. If you want to override configs for " \
+		  "this machine, create /src/server/config_local.py")
 

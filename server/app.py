@@ -3,9 +3,9 @@ from collections import namedtuple
 
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from models import Sample, Sensor
-import config
 import db
 import errors
+import config
 
 app = Flask(__name__)
 

@@ -29,7 +29,7 @@ def catch_exceptions(job_func):
 			job_func(*args, **kwargs)
 		except Exception as e:
 			db.get_session().rollback()
-			print(traceback.format_exc())
+			print((traceback.format_exc()))
 			log.exception('Error when polling')
 			if type(e) not in notified_errors:
 				utils.send_email_error_report('Windlogger.se - ERROR', e.message)

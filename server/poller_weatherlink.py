@@ -22,40 +22,40 @@ WEATHERLINK_BASE_URL = r'http://www.weatherlink.com/user/{user}/index.php?view=s
 SENSORS = [
 	dict(
 		id=10000,
-		name=u'Dalarö Schweizerbadet',
-		service_id=u'kitenation',
+		name='Dalarö Schweizerbadet',
+		service_id='kitenation',
 		type=Sensor.TYPE_WEATHERLINK,
 		latitude=59.135164,
 		longitude=18.400687,
 	),
 	dict(
 		id=10001,
-		name=u'Goekboet',
-		service_id=u'gerhen',
+		name='Goekboet',
+		service_id='gerhen',
 		type=Sensor.TYPE_WEATHERLINK,
 		latitude=55.486676,
 		longitude=14.303449,
 	),
 	dict(
 		id=10002,
-		name=u'Lomma Hamn',
-		service_id=u'lommahamn',
+		name='Lomma Hamn',
+		service_id='lommahamn',
 		type=Sensor.TYPE_WEATHERLINK,
 		latitude=55.674827,
 		longitude=13.060893,
 	),
 	dict(
 		id=10003,
-		name=u'Barsebäck Hamn',
-		service_id=u'barsebackshamn',
+		name='Barsebäck Hamn',
+		service_id='barsebackshamn',
 		type=Sensor.TYPE_WEATHERLINK,
 		latitude=55.756530,
 		longitude=12.903417,
 	),
 	dict(
 		id=10004,
-		name=u'Nidingen',
-		service_id=u'nidingen',
+		name='Nidingen',
+		service_id='nidingen',
 		type=Sensor.TYPE_WEATHERLINK,
 		latitude=57.303146,
 		longitude=11.901856,
@@ -84,7 +84,7 @@ def get_body(html_data):
 
 def parse_timestamp(body):
 	# Set locale to EN in order to parse timestamp strings correctly
-	tds = body.find_all('td', class_=u'summary_timestamp')
+	tds = body.find_all('td', class_='summary_timestamp')
 	assert len(tds) == 1, 'Ambiguous timestamp'
 	stamp = tds[0].text
 	preamble = 'Current Conditions as of '
@@ -151,10 +151,10 @@ def parse_wind_dir(body):
 	siblings = el.parent.findChildren()
 	assert len(siblings) > 1
 	dir_raw = siblings[1].text
-	assert dir_raw.endswith(u'\xb0'), 'No degree symbol where expected'
+	assert dir_raw.endswith('\xb0'), 'No degree symbol where expected'
 	dir_raw = dir_raw[0:-1]
-	assert u'\xa0' in dir_raw, 'No separation symbol where expected'
-	dir_raw = dir_raw.split(u'\xa0')[1]
+	assert '\xa0' in dir_raw, 'No separation symbol where expected'
+	dir_raw = dir_raw.split('\xa0')[1]
 	return int(dir_raw)
 
 

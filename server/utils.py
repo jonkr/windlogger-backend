@@ -42,7 +42,7 @@ def prune_old_samples(days=31):
 		cur.execute("SELECT count(*) FROM samples WHERE date_reported < '{}'".format(
 			time_str))
 		data = cur.fetchone()
-		print 'Samples to prune: {}'.format(data[0])
+		print('Samples to prune: {}'.format(data[0]))
 
 	def prune_samples(cur):
 		cur.execute("DELETE FROM samples WHERE date_reported<'{}'".format(
@@ -53,7 +53,7 @@ def prune_old_samples(days=31):
 			time_str
 		))
 		data = cur.fetchone()
-		print 'Samples remaining: {}'.format(data[0])
+		print('Samples remaining: {}'.format(data[0]))
 
 	con = None
 	try:
@@ -62,8 +62,8 @@ def prune_old_samples(days=31):
 		count_samples(cur)
 		prune_samples(cur)
 
-	except lite.Error, e:
-		print "Error %s:" % e.args[0]
+	except lite.Error as e:
+		print("Error %s:" % e.args[0])
 		sys.exit(1)
 
 	finally:

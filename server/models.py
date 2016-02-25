@@ -30,7 +30,7 @@ class Sensor(Base):
 
 	CODE_2_TYPE = {
 		code: type
-		for type, code in TYPES.items()
+		for type, code in list(TYPES.items())
 	}
 
 	id = Column(Integer, primary_key=True)
@@ -123,7 +123,7 @@ class Sensor(Base):
 		self.store()
 
 	def __repr__(self):
-		return u'<Sensor: name={}, id={}, type={} >'.format(self.name, self.id,
+		return '<Sensor: name={}, id={}, type={} >'.format(self.name, self.id,
 			self.CODE_2_TYPE[self.type])
 
 
@@ -147,7 +147,7 @@ class Sample(Base):
 
 	TYPE_2_FACTOR = {
 		t.code: t.factor
-		for _, t in TYPES.items()
+		for _, t in list(TYPES.items())
 	}
 
 	sensor_id = Column(Integer, ForeignKey('sensors.id'), primary_key=True)

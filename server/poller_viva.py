@@ -62,7 +62,7 @@ def store_sensors(session, sensors, clear_stale_sensors=True):
 				vs.delete()
 
 
-	for id, sensor in sensors.items():
+	for id, sensor in list(sensors.items()):
 		if poll_sensor(session, id):
 			viva_sensor = Sensor.query.filter(Sensor.id == id).scalar()
 			if not viva_sensor:
@@ -88,8 +88,8 @@ def _too_old(sensor_id, raw_sample):
 	dT = datetime.datetime.utcnow() - updated
 	is_too_old = dT > datetime.timedelta(days=AGE_LIMIT_IN_DAYS)
 	if is_too_old:
-		log.warning(u'Sample {type} for sensor {sid} is older'
-		            u' than {limit} days, skipping'.format(
+		log.warning('Sample {type} for sensor {sid} is older'
+		            ' than {limit} days, skipping'.format(
 						type=raw_sample['Name'],
                         limit=AGE_LIMIT_IN_DAYS,
 						sid=sensor_id))

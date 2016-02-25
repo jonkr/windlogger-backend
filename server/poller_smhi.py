@@ -49,7 +49,7 @@ def get_all_sensors():
 	]
 
 	for station in stations:
-		log.debug(u'{}: {}, {}'.format(
+		log.debug('{}: {}, {}'.format(
 			station['name'],
 			station['latitude'],
 			station['longitude']
@@ -93,11 +93,11 @@ def poll_station(sensor):
 
 	samples = []
 
-	for type_, param in SMHI_PARAMS.items():
+	for type_, param in list(SMHI_PARAMS.items()):
 
-		URL = u'http://opendata-download-metobs.smhi.se/api/version/1.0/' \
-		      u'parameter/{param}/station/{station_id}/' \
-		      u'period/latest-day/data.json'.format(
+		URL = 'http://opendata-download-metobs.smhi.se/api/version/1.0/' \
+		      'parameter/{param}/station/{station_id}/' \
+		      'period/latest-day/data.json'.format(
 			param=param, station_id=sensor.id
 		)
 		resp = requests.get(URL)

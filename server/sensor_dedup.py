@@ -55,7 +55,7 @@ def select_sensor_to_hide(s1, s2):
 
 def hide_lowest_ranking_dupe(s1, s2):
 	sensor_to_hide = select_sensor_to_hide(s1, s2)
-	print u'Hiding sensor: {}'.format(sensor_to_hide)
+	print('Hiding sensor: {}'.format(sensor_to_hide))
 	sensor_to_hide.show = False
 	sensor_to_hide.store()
 
@@ -64,13 +64,13 @@ def list_close_by_sensors(args):
 	sensors = Sensor.query.filter(
 		Sensor.show == True).all()
 
-	print 'Sensor counts:'
-	print 'VIVA : {}'.format(
-		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_VIVA]]))
-	print 'SMHI: {}'.format(
-		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_SMHI]]))
-	print 'WEATHERLINK : {}'.format(
-		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_WEATHERLINK]]))
+	print('Sensor counts:')
+	print('VIVA : {}'.format(
+		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_VIVA]])))
+	print('SMHI: {}'.format(
+		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_SMHI]])))
+	print('WEATHERLINK : {}'.format(
+		len([s for s in sensors if s.type == Sensor.TYPES[Sensor.TYPE_WEATHERLINK]])))
 
 	sensors_combo = list(itertools.product(sensors, sensors))
 
@@ -83,12 +83,12 @@ def list_close_by_sensors(args):
 
 	distances = sorted(distances, key=lambda x: x[-1])
 
-	dupes = filter(lambda x: x[-1] < args.limit, distances)
-	print 'Found {} sensors too close to each other:'.format(len(dupes))
+	dupes = [x for x in distances if x[-1] < args.limit]
+	print('Found {} sensors too close to each other:'.format(len(dupes)))
 
-	print '{name:<20} {id:<8} {recent:<7} -- ' \
+	print('{name:<20} {id:<8} {recent:<7} -- ' \
 	      '{name:<20} {id:<8} {recent:<7}'.format(name='NAME', id='ID',
-	                                              recent='RECENT')
+	                                              recent='RECENT'))
 	for dupe in dupes:
 		s1 = dupe[0]
 		s2 = dupe[1]
@@ -97,11 +97,11 @@ def list_close_by_sensors(args):
 		for s in [s1, s2]:
 			recent_samples = s.get_recent_samples(hours=24)
 			s.recent_count = len(recent_samples)
-			s.info = u'{:<20} {:<8} {:<7}'.format(
+			s.info = '{:<20} {:<8} {:<7}'.format(
 				s.name, s.id, s.recent_count)
 
 
-		print u'{} -- {} :: {:>4.0f}'.format(s1.info, s2.info, d)
+		print('{} -- {} :: {:>4.0f}'.format(s1.info, s2.info, d))
 
 	return dupes
 
@@ -111,8 +111,8 @@ def hide_close_by_sensors(args, dupes):
 		s2 = dupe[1]
 		d = dupe[2]
 
-		print u'{:>30} ({:>8}) -- {:>30} ({:>8}): {:>10.0f}'.format(
-			s1.name, s1.id, s2.name, s2.id, d)
+		print('{:>30} ({:>8}) -- {:>30} ({:>8}): {:>10.0f}'.format(
+			s1.name, s1.id, s2.name, s2.id, d))
 
 		hide_lowest_ranking_dupe(s1, s2)
 
@@ -153,8 +153,8 @@ if __name__ == '__main__':
 
 	sensors_shown = Sensor.query.filter(Sensor.show == True).count()
 	sensors_hidden = Sensor.query.filter(Sensor.show == False).count()
-	print '{} sensors are shown'.format(sensors_shown)
-	print '{} sensors are hidden'.format(sensors_hidden)
+	print('{} sensors are shown'.format(sensors_shown))
+	print('{} sensors are hidden'.format(sensors_hidden))
 
 
 
