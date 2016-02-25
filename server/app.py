@@ -46,33 +46,39 @@ def api_sensor_data(id):
 
 	Sensor.get_by_id_or_404(id)
 
-	samples_wind = Sample.get_last(id, type=Sample.TYPE_WIND_SPEED, hours=span)
-	samples_gust = Sample.get_last(id, type=Sample.TYPE_WIND_GUST, hours=span)
-	samples_dir = Sample.get_last(id, type=Sample.TYPE_WIND_DIR, hours=span)
+	samples = {
+		sample_type: Sample.get_last(id, type=sample_type, hours=span)
+		for sample_type in [
+			Sample.TYPE_WIND_SPEED,
+			Sample.TYPE_WIND_GUST,
+			Sample.TYPE_WIND_DIR
+		]
+	}
 
 	data = [
 		{
 			'data': [
 				[s.timestamp, s.data]
-				for s in samples_wind
+				for s in samples[Sample.TYPE_WIND_SPEED]
 			],
 			'name': 'wind'
 		},
 		{
 			'data': [
 				[s.timestamp, s.data]
-				for s in samples_gust
+				for s in samples[Sample.TYPE_WIND_GUST]
 			],
 			'name': 'gust'
 		},
 		{
 			'data': [
 				[s.timestamp, s.data]
-				for s in samples_dir
+				for s in samples[Sample.TYPE_WIND_DIR]
 			],
 			'name': 'direction'
 		},
 	]
+
 	return jsonify(data=data)
 
 
