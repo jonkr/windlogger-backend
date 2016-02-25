@@ -1,6 +1,6 @@
 awsnano         ansible_ssh_user=ubuntu
 
-[webserver-aws]
+[webserver-awsnano]
 awsnano
 
 [webservers]
