@@ -23,7 +23,7 @@
   lineinfile:
     dest=/etc/postgresql/9.3/main/postgresql.conf
     regexp='^shared_buffers = '
-    line='shared_buffers = 16MB '
+    line='shared_buffers = 16MB'
   notify: restart postgres
 
 - name: check if windlogger DB exists
