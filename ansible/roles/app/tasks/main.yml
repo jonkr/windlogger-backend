@@ -114,24 +114,6 @@
     virtualenv="{{ app_dir }}/backend/venv"
     virtualenv_python=python3.4
 
-- name: ensure supervisor knows about the app
-  command: "{{ item }}"
-  with_items:
-    - /usr/bin/supervisorctl reread
-    - /usr/bin/supervisorctl reload
-
-- name: check if supervisor is active and knows about the app
-  command: supervisorctl status
-  register: supervisor_status
-
-- debug: var=supervisor_status
-
-- name: stop windlogger
-  when: supervisor_status["stdout"].find("windlogger") > 0
-  supervisorctl: name="windlogger:" state=stopped
-  notify:
-    - start windlogger
-
 - name: render db migration script
   template:
     src=RUN_MIGRATIONS.sh.j2
@@ -150,6 +132,29 @@
     src="alembic.ini.j2"
     dest="{{ app_dir }}/backend/alembic.ini"
     owner="{{ user }}"
+
+- name: check if supervisor knows about the app
+  command: supervisorctl status
+  become: yes
+  register: supervisor_status
+
+- debug: var=supervisor_status
+
+- name: run initial DB migrations, if needed
+  when: supervisor_status.stdout.find('windlogger') == -1
+  command: "{{ app_dir }}/backend/RUN_MIGRATIONS.sh"
+  args:
+    chdir: "{{ app_dir }}/backend"
+
+- name: ensure supervisor knows about the app
+  command: "{{ item }}"
+  with_items:
+    - /usr/bin/supervisorctl reread
+    - /usr/bin/supervisorctl update
+
+- name: stop app before running migrations
+  become: yes
+  supervisorctl: name="windlogger:" state=stopped
 
 - name: run alembic migrations
   command: "{{ app_dir }}/backend/RUN_MIGRATIONS.sh"
