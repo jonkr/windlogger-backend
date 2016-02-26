@@ -1,0 +1,49 @@
+- name: check if running as a vagrant box
+  debug: var=vagrant
+
+- name: read credentials from file
+  include_vars: "./../credentials.json"
+  register: credentials
+
+- debug: var=credentials
+
+- name: install dependencies
+  apt:
+    pkg={{ item }}
+    state=installed
+    update_cache=true
+    cache_valid_time={{ 7*24*60*60}}
+  with_items:
+    - postgresql
+    - postgresql-contrib
+  notify:
+    - start postgres
+
+- name: check if windlogger DB exists
+  command: "psql -l"
+  register: db_list
+  become: yes
+  become_user: postgres
+
+- debug: var=db_list
+
+- debug: var=db_list["stdout"]
+
+- name: create windlogger DB
+  command: createdb windlogger
+  become: yes
+  become_user: postgres
+  when: db_list["stdout"].find("windlogger") == -1
+
+- name: check if DB user exists
+  command: 'psql -c "SELECT rolname FROM pg_roles;"'
+  become: yes
+  become_user: postgres
+  register: db_roles
+
+- name: create DB user
+  command: psql -c "CREATE USER windlogger WITH PASSWORD '{{ credentials.ansible_facts.postgresPassword }}';"
+  become: yes
+  become_user: postgres
+  when: db_roles["stdout"].find("windlogger") == -1
+

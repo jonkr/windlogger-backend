@@ -16,12 +16,10 @@
   with_items:
     - nginx
     - supervisor
-    - python2.7-dev
+    - python3.4-dev
     - python-pip
     - git
     - libffi-dev
-    - postgresql
-    - postgresql-contrib
     - libpq-dev # Needed for the psycopg2 python postgres driver
     - libffi-dev # Fix for InsecurePlatformWarning when installing requests in VM
     - libssl-dev # Fix for InsecurePlatformWarning when installing requests in VM
@@ -34,34 +32,6 @@
 - name: create user
   user: name="{{ user }}"
 
-- name: check if windlogger DB exists
-  command: "psql -l"
-  register: db_list
-  become: yes
-  become_user: postgres
-
-- debug: var=db_list
-
-- debug: var=db_list["stdout"]
-
-- name: create windlogger DB
-  command: createdb windlogger
-  become: yes
-  become_user: postgres
-  when: db_list["stdout"].find("windlogger") == -1
-
-- name: check if DB user exists
-  command: 'psql -c "SELECT rolname FROM pg_roles;"'
-  become: yes
-  become_user: postgres
-  register: db_roles
-
-- name: create DB user
-  command: psql -c "CREATE USER windlogger WITH PASSWORD '{{ credentials.ansible_facts.postgresPassword }}';"
-  become: yes
-  become_user: postgres
-  when: db_roles["stdout"].find("windlogger") == -1
-
 - name: render supervisor config
   template:
     src=supervisor_windlogger.conf.j2
@@ -73,14 +43,14 @@
 - name: add default nginx config
   copy: src=nginx_main.conf dest=/etc/nginx/nginx.conf
   notify:
-    - reload nginx
+    - restart nginx
 
 - name: render nginx app config
   template:
     src=nginx_windlogger.conf.j2
     dest=/etc/nginx/sites-available/windlogger.conf
   notify:
-    - reload nginx
+    - restart nginx
 
 - name: enable nginx config
   file:
@@ -89,12 +59,14 @@
     state=link
   tags: deploy
   notify:
-    - reload nginx
+    - restart nginx
 
 - name: disable nginx default site config
   file:
     path=/etc/nginx/sites-enabled/default
     state=absent
+  notify:
+    - restart nginx
 
 - name: download backend
   git:
@@ -136,31 +108,36 @@
     owner="{{ user }}"
     mode=u+x
 
+- name: install python environment
+  pip:
+    requirements="{{ app_dir }}/backend/requirements.prod"
+    virtualenv="{{ app_dir }}/backend/venv"
+    virtualenv_python=python3.4
+
+- name: ensure supervisor knows about the app
+  command: "{{ item }}"
+  with_items:
+    - /usr/bin/supervisorctl reread
+    - /usr/bin/supervisorctl reload
+
+- name: check if supervisor is active and knows about the app
+  command: supervisorctl status
+  register: supervisor_status
+
+- debug: var=supervisor_status
+
+- name: stop windlogger
+  when: supervisor_status["stdout"].find("windlogger") > 0
+  supervisorctl: name="windlogger:" state=stopped
+  notify:
+    - start windlogger
+
 - name: render db migration script
   template:
     src=RUN_MIGRATIONS.sh.j2
     dest="{{ app_dir }}/backend/RUN_MIGRATIONS.sh"
     owner="{{ user }}"
     mode=u+x
-
-- name: install extra pip packages for SSL-fix
-  pip:
-    name={{ item }}
-    virtualenv="{{ app_dir }}/backend/venv"
-  with_items:
-    - pyopenssl
-    - ndg-httpsclient
-    - pyasn1
-
-- name: install python environment
-  pip:
-    requirements="{{ app_dir }}/backend/requirements.prod"
-    virtualenv="{{ app_dir }}/backend/venv"
-
-- name: stop windlogger
-  supervisorctl: name="windlogger:" state=stopped
-  notify:
-    - start windlogger
 
 - name: set db uri for alembic
   set_fact:

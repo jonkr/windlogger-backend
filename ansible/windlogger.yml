@@ -1,9 +1,12 @@
 - hosts: webservers
-  sudo: true
+  become: yes
+  become_user: root
+  become_method: sudo
   vars:
     user: windlogger
     app_dir: /opt/windlogger
     socket_file: /tmp/gunicorn_windlogger.sock
     DEBUG: false
   roles:
+    - { role: postgresql, tags: ['app'] }
     - { role: app, tags: ['app'] }
