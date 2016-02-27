@@ -1,5 +1,5 @@
 - hosts: awsnano
-  sudo: true
+  become: yes
   tasks:
 
     - name: dump DB to file
