@@ -2,11 +2,11 @@ import os
 import json
 
 def relative(path):
-	return os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(
-		__file__)), path))
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(
+            __file__)), path))
 
 def read_credentials():
-	return json.load(open(relative('./../credentials.json')))
+    return json.load(open(relative('./../credentials.json')))
 
 CREDENTIALS = read_credentials()
 
@@ -14,7 +14,7 @@ DB_PASSWORD = CREDENTIALS['postgresPassword']
 DB_USER = 'windlogger'
 DB_NAME = 'windlogger'
 DB_URI = 'postgresql+psycopg2://{user}:{password}@localhost/{db}'.format(
-	user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
+        user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
 
 DEBUG = 'DEBUG' in os.environ
 print('DEBUG:%s'%DEBUG)
@@ -32,8 +32,8 @@ MAILGUN_API_KEY = CREDENTIALS['mailGunApiKey']
 
 # ADD/OVERWRITE WITH MACHINE LOCAL CONFIGS
 try:
-	from config_local import *
+    from config_local import *
 except ImportError as e:
-	print("No local config file found. If you want to override configs for " \
-		  "this machine, create /src/server/config_local.py")
+    print("No local config file found. If you want to override configs for " \
+              "this machine, create /src/server/config_local.py")
 
