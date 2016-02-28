@@ -79,7 +79,7 @@
     - deploy
   notify:
     - update supervisor
-    - start windlogger
+    - restart windlogger
 
 - name: copy credentials file
   copy:
