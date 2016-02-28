@@ -1,6 +1,15 @@
 [group:windlogger]
 programs=windlogger-app,windlogger-poller-viva,windlogger-poller-weatherlink,windlogger-poller-smhi
 
+[program:windlogger-stackcollector]
+command={{ app_dir }}/backend/RUN_STACK_COLLECTOR.sh
+directory={{ app_dir }}/backend
+user={{ user }}
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/windlogger_stackcollector.log
+loglevel=info
+
 [program:windlogger-app]
 command={{ app_dir }}/backend/RUN_SERVER.sh
 directory={{ app_dir }}/backend
