@@ -21,7 +21,7 @@ STARTING_PORT = 10000
 POLL_PERIOD = 10
 
 procs = []
-samples = []
+samples = collections.deque(maxlen=1000)
 
 
 def create_app():
@@ -49,7 +49,7 @@ def configure_routes(app):
     @app.route('/samples')
     def serve_samples():
         return json.dumps({
-            'samples': samples
+            'samples': list(samples)
         })
 
     @app.route('/flamegraph')
