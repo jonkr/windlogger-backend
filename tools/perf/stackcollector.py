@@ -4,13 +4,11 @@ a port where it publishes the stacksampler results.
 """
 import logging
 import subprocess
-from io import StringIO
 
 import collections
 import gevent
 import signal
 import requests
-from gevent.wsgi import WSGIServer
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -75,11 +73,6 @@ def merge_samples(samples, exclude='stacksampler'):
      ])
 
 
-def run_server(app):
-    http_server = WSGIServer(('0.0.0.0', 9000), app)
-    http_server.serve_forever()
-
-
 def poll(procs):
     print('Starting poller')
     log.info('Starting stack sample poller')
@@ -109,7 +102,7 @@ if __name__ == '__main__':
 
     greenlets = [
         gevent.spawn(poll, procs),
-        gevent.spawn(run_server, app)
+        gevent.spawn(app.run)
     ]
 
     def kill_all():
