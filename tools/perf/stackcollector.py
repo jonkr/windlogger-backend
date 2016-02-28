@@ -30,7 +30,6 @@ def create_app():
 
 
 def configure_routes(app):
-
     @app.route('/init', methods=['POST'])
     def init():
         if not procs:
@@ -68,10 +67,10 @@ def merge_samples(samples):
             frame, count = line.split(' ')
             stack_counts[frame] += int(count)
     return '\n'.join([
-        '{} {}'.format(frame, count)
-        for frame, count
-        in stack_counts.items()
-    ])
+         '{} {}'.format(frame, count)
+         for frame, count
+         in stack_counts.items()
+     ])
 
 
 def run_server(app):
@@ -86,7 +85,7 @@ def poll(procs):
     while True:
         log.info('Polling %s processes', len(procs))
         for proc in procs:
-            resp = requests.get('http://localhost:{}'.format(proc))
+            resp = requests.get('http://localhost:{}?reset=true'.format(proc))
             assert resp.status_code == 200, 'Could not collect stack sample'
             log.info('Received stack sample of length %s from %s',
                      len(resp.text), proc)
@@ -94,14 +93,8 @@ def poll(procs):
         gevent.sleep(10)
 
 
-def shutdown():
-    log.info('Shutting down')
-    exit(0)
-
-
 if __name__ == '__main__':
     gevent.signal(signal.SIGQUIT, gevent.kill)
-    gevent.signal(signal.SIGTERM, shutdown)
 
     app = create_app()
     configure_routes(app)

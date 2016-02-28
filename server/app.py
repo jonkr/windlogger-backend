@@ -1,5 +1,7 @@
 import logging
 from collections import namedtuple
+
+import signal
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import gevent
 import stacksampler
@@ -16,6 +18,8 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 gevent.spawn(stacksampler.run_profiler)
+gevent.signal(signal.SIGQUIT, gevent.kill)
+
 
 CoordScope = namedtuple('CoordScope', ['lat_min', 'lat_max', 'lng_min', 'lng_max'])
 
