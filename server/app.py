@@ -38,7 +38,7 @@ def api_sensors():
 @app.route('/api/sensors/<int:id>')
 def api_sensor(id):
     """List specific sensor"""
-    sensor = Sensor.get_by_id(id)
+    sensor = Sensor.get_by_id_or_404(id)
     return jsonify(sensor.format())
 
 
