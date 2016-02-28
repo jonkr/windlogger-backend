@@ -6,6 +6,7 @@ import logging
 import subprocess
 from io import StringIO
 
+import collections
 import gevent
 import signal
 import requests
@@ -56,8 +57,21 @@ def configure_routes(app):
         p = subprocess.Popen(['perl', './tools/perf/flamegraph.pl'],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
-        stdout = p.communicate(samples[-1].encode('utf8'))
+        stdout = p.communicate(merge_samples(samples).encode('utf8'))
         return Response(stdout[0], mimetype='image/svg+xml')
+
+
+def merge_samples(samples):
+    stack_counts = collections.defaultdict(int)
+    for sample in samples:
+        for line in sample.splitlines()[2:]:
+            frame, count = line.split(' ')
+            stack_counts[frame] += int(count)
+    return '\n'.join([
+        '{} {}'.format(frame, count)
+        for frame, count
+        in stack_counts.items()
+    ])
 
 
 def run_server(app):
