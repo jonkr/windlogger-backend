@@ -31,6 +31,11 @@ server {
 		}
 	}
 
+	location /flamegraph {
+		proxy_pass http://localhost:9000/flamegraph;
+		break;
+	}
+
 	# paths for static files
 	location  / {
 		alias {{ app_dir }}/frontend/build/;
