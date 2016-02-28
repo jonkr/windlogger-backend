@@ -95,21 +95,26 @@ def poll(procs):
         gevent.sleep(10)
 
 
-def kill_on_signals():
-    gevent.signal(signal.SIGQUIT, gevent.kill)
-    gevent.signal(signal.SIGHUP, gevent.kill)
-    gevent.signal(signal.SIGINT, gevent.kill)
-    gevent.signal(signal.SIGTERM, gevent.kill)
+def kill_on_signals(callback):
+    gevent.signal(signal.SIGQUIT, callback)
+    gevent.signal(signal.SIGHUP, callback)
+    gevent.signal(signal.SIGINT, callback)
+    gevent.signal(signal.SIGTERM, callback)
 
 
 if __name__ == '__main__':
 
-    kill_on_signals()
-
     app = create_app()
     configure_routes(app)
 
-    gevent.joinall([
-        gevent.spawn(run_server, app),
-        gevent.spawn(poll, procs)
-    ])
+    greenlets = [
+        gevent.spawn(poll, procs),
+        gevent.spawn(run_server, app)
+    ]
+
+    def kill_all():
+        gevent.killall(greenlets)
+
+    kill_on_signals(kill_all)
+
+    gevent.joinall(greenlets)

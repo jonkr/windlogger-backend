@@ -32,11 +32,13 @@ def setup_db():
 
 
 def setup_stacksampler():
-    gevent.spawn(stacksampler.run_profiler)
-    gevent.signal(signal.SIGQUIT, gevent.kill)
-    gevent.signal(signal.SIGHUP, gevent.kill)
-    gevent.signal(signal.SIGINT, gevent.kill)
-    gevent.signal(signal.SIGTERM, gevent.kill)
+    greenlet = gevent.spawn(stacksampler.run_profiler)
+    def kill_stacksampler():
+        gevent.kill(greenlet)
+    gevent.signal(signal.SIGQUIT, kill_stacksampler)
+    gevent.signal(signal.SIGHUP, kill_stacksampler)
+    gevent.signal(signal.SIGINT, kill_stacksampler)
+    gevent.signal(signal.SIGTERM, kill_stacksampler)
 
 
 def configure_routes(app):
