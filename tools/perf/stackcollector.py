@@ -95,8 +95,16 @@ def poll(procs):
         gevent.sleep(10)
 
 
-if __name__ == '__main__':
+def kill_on_signals():
     gevent.signal(signal.SIGQUIT, gevent.kill)
+    gevent.signal(signal.SIGHUP, gevent.kill)
+    gevent.signal(signal.SIGINT, gevent.kill)
+    gevent.signal(signal.SIGTERM, gevent.kill)
+
+
+if __name__ == '__main__':
+
+    kill_on_signals()
 
     app = create_app()
     configure_routes(app)
