@@ -2,7 +2,8 @@ run:
 	DEBUG=1 PYTHONPATH=./tools/perf:./server python server/app.py
 
 run-gunicorn:
-	PYTHONPATH=./tools/perf:./server gunicorn server.app:app --bind 0.0.0.0:5000 -w 1 -k gevent
+	PYTHONPATH=./tools/perf:./server gunicorn server.appcontainer:app \
+		--bind 0.0.0.0:5000 -w 4 -k gevent
 
 # Run flask app without debug, but do serve static files
 run-as-prod:

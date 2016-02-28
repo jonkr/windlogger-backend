@@ -111,6 +111,7 @@ def get_port():
     log.info('Reported to stack-collector, got port: %s', resp.text)
     return int(resp.text)
 
+
 def run_profiler(host='0.0.0.0'):
     port = get_port()
     sampler = Sampler()
