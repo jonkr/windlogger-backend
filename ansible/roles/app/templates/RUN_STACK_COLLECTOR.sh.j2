@@ -7,6 +7,6 @@ WORKERS=4
 export PYTHONPATH=$APP_DIR/backend:$APP_DIR/backend/server:$APP_DIR/backend/tools/perf
 source $VENV_DIR/activate
 
-cd $APP_DIR
+cd $APP_DIR/backend
 
-python tools/perf/stacksampler.py
+python ./tools/perf/stackcollector.py
