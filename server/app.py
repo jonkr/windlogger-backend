@@ -1,7 +1,8 @@
 import logging
 from collections import namedtuple
-
 from flask import Flask, request, jsonify, send_from_directory, render_template
+import gevent
+import stacksampler
 from models import Sample, Sensor
 import db
 import errors
@@ -9,10 +10,12 @@ import config
 
 app = Flask(__name__)
 
+db.init()
+
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-db.init()
+gevent.spawn(stacksampler.run_profiler)
 
 CoordScope = namedtuple('CoordScope', ['lat_min', 'lat_max', 'lng_min', 'lng_max'])
 
@@ -125,6 +128,5 @@ def filter_sensor_coords(query, coord_scope):
 
 
 if __name__ == '__main__':
-
     app.run(port=5000, debug=config.DEBUG, host='0.0.0.0')
 
