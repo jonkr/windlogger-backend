@@ -60,9 +60,11 @@ def configure_routes(app):
         return Response(stdout[0], mimetype='image/svg+xml')
 
 
-def merge_samples(samples):
+def merge_samples(samples, exclude='stacksampler'):
     stack_counts = collections.defaultdict(int)
     for sample in samples:
+        if exclude in sample:
+            continue
         for line in sample.splitlines()[2:]:
             frame, count = line.split(' ')
             stack_counts[frame] += int(count)
