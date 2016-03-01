@@ -172,3 +172,10 @@
   supervisorctl:
     name="windlogger:"
     state=started
+
+- name: nightly restart (temporary fix until db-problems are resolved)
+  cron:
+    name="windlogger restart"
+    minute="0"
+    hour="4"
+    job="supervisorctl restart windlogger:"
