@@ -9,4 +9,4 @@ source $VENV_DIR/activate
 
 cd $APP_DIR
 
-exec gunicorn server.appcontainer:app --bind unix:{{ socket_file }} -w $WORKERS -k gevent
+exec gunicorn server.appcontainer:app --bind unix:{{ socket_file }} -w $WORKERS

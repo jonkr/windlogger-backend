@@ -1,11 +1,8 @@
 import logging
 from collections import namedtuple
 
-import signal
-from flask import Flask, request, jsonify, send_from_directory, render_template
-import gevent
+from flask import Flask, request, jsonify
 
-import stacksampler
 from models import Sample, Sensor
 import db
 import errors
@@ -31,17 +28,8 @@ def setup_db():
     db.init()
 
 
-def setup_stacksampler():
-    greenlet = gevent.spawn(stacksampler.run_profiler)
-    def kill_stacksampler():
-        gevent.kill(greenlet)
-    gevent.signal(signal.SIGQUIT, kill_stacksampler)
-    gevent.signal(signal.SIGHUP, kill_stacksampler)
-    gevent.signal(signal.SIGINT, kill_stacksampler)
-    gevent.signal(signal.SIGTERM, kill_stacksampler)
-
-
 def configure_routes(app):
+
     @app.route('/api/sensors')
     def api_sensors():
         """List all sensors"""

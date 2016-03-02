@@ -6,9 +6,10 @@ import logging
 import subprocess
 
 import collections
-import gevent
-import signal
+import threading
+
 import requests
+import time
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -73,26 +74,41 @@ def merge_samples(samples, exclude='stacksampler'):
      ])
 
 
-def poll(procs):
-    print('Starting poller')
-    log.info('Starting stack sample poller')
-    gevent.sleep(1)
-    while True:
-        log.info('Polling %s processes', len(procs))
-        for proc in procs:
-            resp = requests.get('http://localhost:{}?reset=true'.format(proc))
-            assert resp.status_code == 200, 'Could not collect stack sample'
-            log.info('Received stack sample of length %s from %s',
-                     len(resp.text), proc)
-            samples.append(resp.text)
-        gevent.sleep(10)
+class StackPoller(threading.Thread):
 
+    def __init__(self, procs):
+        super(StackPoller, self).__init__()
+        self._stop = threading.Event()
+        self.procs = procs
 
-def kill_on_signals(callback):
-    gevent.signal(signal.SIGQUIT, callback)
-    gevent.signal(signal.SIGHUP, callback)
-    gevent.signal(signal.SIGINT, callback)
-    gevent.signal(signal.SIGTERM, callback)
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.is_set()
+
+    def run(self):
+        self.poll()
+
+    def poll(self):
+        print('Starting poller')
+        log.info('Starting stack sample poller')
+        time.sleep(2)
+        while not self.stopped():
+            log.info('Polling %s processes', len(self.procs))
+            for proc in self.procs:
+                resp = requests.get('http://localhost:{}?reset=true'.format(
+                    proc), timeout=0.5)
+                assert resp.status_code == 200, 'Could not collect stack sample'
+                log.info('Received stack sample of length %s from %s',
+                         len(resp.text), proc)
+                samples.append(resp.text)
+            self.light_sleep(10)
+
+    def light_sleep(self, duration=1):
+        for i in range(10):
+            if not self.stopped():
+                time.sleep(duration)
 
 
 if __name__ == '__main__':
@@ -100,14 +116,11 @@ if __name__ == '__main__':
     app = create_app()
     configure_routes(app)
 
-    greenlets = [
-        gevent.spawn(poll, procs),
-        gevent.spawn(app.run)
-    ]
+    poll_thread = StackPoller(procs=procs)
+    poll_thread.start()
 
-    def kill_all():
-        gevent.killall(greenlets)
-
-    kill_on_signals(kill_all)
-
-    gevent.joinall(greenlets)
+    try:
+        app.run(host='0.0.0.0', port=9000)
+    except KeyboardInterrupt:
+        poll_thread.stop()
+        poll_thread.join()

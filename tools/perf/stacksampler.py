@@ -14,9 +14,11 @@ Then curl localhost:16384 to get a list of stack frames and call counts.
 
 import collections
 import signal
+import threading
 import time
 import logging
 import requests
+from flask import Blueprint, request
 from werkzeug.serving import BaseWSGIServer, WSGIRequestHandler
 from werkzeug.wrappers import Request, Response
 
@@ -112,9 +114,15 @@ def get_port():
     return int(resp.text)
 
 
-def run_profiler(host='0.0.0.0'):
+def run_profiler():
+
     port = get_port()
     sampler = Sampler()
     sampler.start()
-    e = Emitter(sampler, host, port)
-    e.run()
+
+    emitter = Emitter(sampler, '0.0.0.0', port)
+
+    t = threading.Thread(target=emitter.run)
+    t.start()
+    return t
+
