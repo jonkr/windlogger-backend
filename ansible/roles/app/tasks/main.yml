@@ -12,7 +12,7 @@
     pkg={{ item }}
     state=installed
     update_cache=true
-    cache_valid_time={{ 7*24*60*60}}
+    cache_valid_time={{ 6*60*60}}
   with_items:
     - nginx
     - supervisor
@@ -21,8 +21,6 @@
     - git
     - libffi-dev
     - libpq-dev # Needed for the psycopg2 python postgres driver
-    - libffi-dev # Fix for InsecurePlatformWarning when installing requests in VM
-    - libssl-dev # Fix for InsecurePlatformWarning when installing requests in VM
   notify:
     - start nginx
 
