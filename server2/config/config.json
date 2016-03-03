@@ -7,11 +7,10 @@
     "dialect": "postgresql"
   },
   "test": {
-    "username": "",
+    "username": null,
     "password": null,
     "database": "windlogger",
-    "host": "127.0.0.1",
-    "dialect": "postgresql"
+    "dialect": "sqlite"
   },
   "production": {
     "username": "root",

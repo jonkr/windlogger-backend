@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 	const Sample = sequelize.define('Sample', {
-		id: {
+		sensorId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true
 		},
