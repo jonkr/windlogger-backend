@@ -57,6 +57,16 @@ app.get('/api/sensors', function (req, res) {
 	})
 });
 
+app.get('/api/sensors/:id', function (req, res, next) {
+	Sensor.findOne({
+		where: {
+			id: req.params.id
+		}
+	}).then(function (sensor) {
+		res.send(sensor);
+	})
+});
+
 app.listen(PORT, function () {
 	console.log(`Windlogger backend listening on ${PORT}`);
 });
