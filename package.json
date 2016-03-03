@@ -1,0 +1,35 @@
+{
+  "name": "windlogger-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for [windlogger.se](http://windlogger.se), a wind data aggregator. Windlogger collects and presents wind speed data from 200+ weather stations in Sweden.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^4.13.4",
+    "express-generator": "^4.13.1",
+    "moment": "^2.11.2",
+    "pg": "^4.5.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.19.3",
+    "sequelize-cli": "^2.3.1",
+    "sqlite3": "^3.1.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonkr/windlogger-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonkr/windlogger-backend/issues"
+  },
+  "homepage": "https://github.com/jonkr/windlogger-backend#readme"
+}
