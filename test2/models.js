@@ -90,6 +90,26 @@ describe('Models', () => {
 					done();
 				});
 		});
+
+		it('Correctly filters out old samples', (done) => {
+			models.sample.findAll({
+					where: {
+						sensorId: 1,
+						dateReported: {
+							$gte: moment().subtract(90, 'minutes').toDate()
+						}
+					},
+					order: [
+						['dateReported', 'ASC']
+					]
+				})
+				.then((samples) => {
+					expect(samples.length).to.equal(1);
+					expect(samples[0].data).to.equal(20);
+					done();
+				});
+		});
+
 	})
 
 });
