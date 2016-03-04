@@ -9,17 +9,17 @@ const models = require('./../server2/models');
 
 describe('Models', () => {
 
-	before( () => {
+	before(() => {
 		models.sequelize.sync();
 	});
 
 	describe('Sensor', () => {
 
-		beforeEach( () => {
+		beforeEach(() => {
 			models.sensor.destroy({
 				force: true,
 				truncate: true
-			}).then( () => {
+			}).then(() => {
 				const sensor = models.sensor.build({
 					name: 'Test 1',
 					latitude: 1,
@@ -27,14 +27,14 @@ describe('Models', () => {
 					serviceId: 0,
 					show: true
 				});
-				sensor.save().catch( (err) => {
+				sensor.save().catch((err) => {
 					throw Error(err);
 				});
 			});
 		});
 
 		it('Persists new sensor', (done) => {
-			models.sensor.findAll().then( (sensors) => {
+			models.sensor.findAll().then((sensors) => {
 				expect(sensors.length).to.equal(1);
 				expect(sensors[0].name).to.equal('Test 1');
 				done();
@@ -45,30 +45,50 @@ describe('Models', () => {
 
 	describe('Sample', () => {
 
-		beforeEach( () => {
+		beforeEach(() => {
 			models.sample.destroy({
 				force: true,
 				truncate: true
-			}).then( () => {
+			}).then(() => {
 				const sample = models.sample.build({
 					sensorId: 1,
-					dateReported: moment().subtract(1, 'hour'),
-					dateCreated: moment().subtract(1, 'hour'),
+					dateReported: moment().subtract(1, 'hour').toDate(),
+					dateCreated: moment().subtract(1, 'hour').toDate(),
+					data: 20,
+					type: 0
+				});
+				sample.save().catch((err) => {
+					throw Error(err);
+				})
+			}).then(() => {
+				const sample = models.sample.build({
+					sensorId: 1,
+					dateReported: moment().subtract(2, 'hour').toDate(),
+					dateCreated: moment().subtract(2, 'hour').toDate(),
 					data: 10,
 					type: 0
 				});
-				sample.save().catch( (err) => {
+				sample.save().catch((err) => {
 					throw Error(err);
 				})
 			})
 		});
 
 		it('Persists new sample', (done) => {
-			models.sample.findAll().then( (samples) => {
-				expect(samples.length).to.equal(1);
-				expect(samples[0].data).to.equal(10);
-				done();
-			});
+			models.sample.findAll({
+					where: {
+						sensorId: 1
+					},
+					order: [
+						['dateReported', 'ASC']
+					]
+				})
+				.then((samples) => {
+					expect(samples.length).to.equal(2);
+					expect(samples[0].data).to.equal(10);
+					expect(samples[1].data).to.equal(20);
+					done();
+				});
 		});
 	})
 
