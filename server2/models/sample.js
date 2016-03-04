@@ -1,15 +1,20 @@
 'use strict';
 
 module.exports = function (sequelize, DataTypes) {
-	const Sample = sequelize.define('Sample', {
+	const sample = sequelize.define('sample', {
 		sensorId: {
 			type: DataTypes.INTEGER,
-			primaryKey: true
+			primaryKey: true,
+			field: 'sensor_id'
 		},
-		dateCreated: DataTypes.DATE,
+		dateCreated: {
+			type: DataTypes.DATE,
+			field: 'date_created'
+		},
 		dateReported: {
 			type: DataTypes.DATE,
-			primaryKey: true
+			primaryKey: true,
+			field: 'date_reported'
 		},
 		type: {
 			type: DataTypes.INTEGER,
@@ -22,7 +27,7 @@ module.exports = function (sequelize, DataTypes) {
 	}, {
 		classMethods: {
 			associate: function (models) {
-				Sample.belongsTo(models.Sensor, {
+				sample.belongsTo(models.sensor, {
 					onDelete: "CASCADE",
 					foreignKey: {
 						allowNull: false
@@ -30,11 +35,7 @@ module.exports = function (sequelize, DataTypes) {
 				});
 			}
 		},
-		timestamps: false,
-		underscored: true,
-		freezeTableName: true,
-		tableName: 'samples'
+		timestamps: false
 	});
-
-	return Sample;
+	return sample;
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (sequelize, DataTypes) {
-	const Sensor = sequelize.define('Sensor', {
+	const sensor = sequelize.define('sensor', {
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true
@@ -17,15 +17,10 @@ module.exports = function (sequelize, DataTypes) {
 	}, {
 		classMethods: {
 			associate: function (models) {
-				Sensor.hasMany(models.Sample)
+				sensor.hasMany(models.sample)
 			}
 		},
-		timestamps: false,
-		underscored: true,
-		freezeTableName: true,
-		tableName: 'sensors'
+		timestamps: false
 	});
-
-	return Sensor;
-
+	return sensor;
 };

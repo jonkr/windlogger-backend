@@ -10,13 +10,16 @@
     "username": null,
     "password": null,
     "database": "windlogger",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "benchmark": true,
+    "logging": false
   },
   "production": {
     "username": "root",
     "password": null,
     "database": "windlogger",
     "host": "127.0.0.1",
-    "dialect": "postgresql"
+    "dialect": "postgresql",
+    "logging": false
   }
 }
