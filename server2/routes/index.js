@@ -2,39 +2,55 @@
 
 const models = require('../models');
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
 
 router.get('/api/sensors', (req, res) => {
-	models.Sensor.findAll().then( sensors => {
-		res.send(sensors);
+	models.sensor.findAll().then(sensors => {
+		res.send({data: sensors});
 	})
 });
 
 router.get('/api/sensors/:id', (req, res) => {
-	models.Sensor.findOne({
+	models.sensor.findOne({
 		where: {
-			id: req.params.id
+			id: Number(req.params.id)
 		}
-	}).then( sensor => {
-		res.send(sensor);
+	}).then(sensor => {
+		if (!sensor) {
+			res.status(404).send({
+				message: `Sensor ${req.params.id} does not exist`
+			})
+		} else {
+			res.send(sensor);
+		}
 	})
 });
 
-router.get('/api/sensors/:id/data', (req, res) => {
-	models.Sensor.findOne({
+router.get('/api/sensors/:id/data', (req, res, next) => {
+	models.sensor.findOne({
 		where: {
-			id: req.params.id
+			id: Number(req.params.id)
 		}
-	}).then( sensor => {
-		models.Sample.findAll({
-			where: {
-				dateReported: {
-					sensorId: req.params.id,
-					$gte: moment().subtract(24, 'hours')
+	}).then(sensor => {
+		if (!sensor) {
+			res.status(404).send({
+				message: `Sensor ${req.params.id} does not exist`
+			});
+		} else {
+			const hours = Number(req.query.span) || 2;
+			return models.sample.findAll({
+				where: {
+					dateReported: {
+						sensorId: req.params.id,
+						$gte: moment().subtract(hours, 'hours').format()
+					}
 				}
-			}
-		})
-	})
+			})
+		}
+	}).then(samples => {
+		res.send({data: samples});
+	}).catch(next);
 });
 
 module.exports = router;

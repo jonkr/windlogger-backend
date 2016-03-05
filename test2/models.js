@@ -1,40 +1,38 @@
 'use strict';
 
 const moment = require('moment');
-
-
 const expect = require('chai').expect;
-
 const models = require('./../server2/models');
 
 describe('Models', () => {
 
-	before(() => {
-		models.sequelize.sync();
+	beforeEach(done => {
+		models.sequelize.sync({force: true}).then(() => {
+			done();
+		});
 	});
 
 	describe('Sensor', () => {
 
-		beforeEach(() => {
-			models.sensor.destroy({
-				force: true,
-				truncate: true
-			}).then(() => {
-				const sensor = models.sensor.build({
-					name: 'Test 1',
-					latitude: 1,
-					longitude: 2,
-					serviceId: 0,
-					show: true
-				});
-				sensor.save().catch((err) => {
-					throw Error(err);
-				});
+		beforeEach(done => {
+			const sensor = models.sensor.build({
+				id: 1,
+				name: 'Test 1',
+				latitude: 1,
+				longitude: 2,
+				serviceId: 0,
+				show: true
 			});
+			sensor.save().then(() => {
+					done();
+				})
+				.catch(err => {
+					throw new Error(err);
+				});
 		});
 
-		it('Persists new sensor', (done) => {
-			models.sensor.findAll().then((sensors) => {
+		it('Persists new sensor', done => {
+			models.sensor.findAll().then(sensors => {
 				expect(sensors.length).to.equal(1);
 				expect(sensors[0].name).to.equal('Test 1');
 				done();
@@ -45,33 +43,46 @@ describe('Models', () => {
 
 	describe('Sample', () => {
 
-		beforeEach(() => {
-			models.sample.destroy({
-				force: true,
-				truncate: true
-			}).then(() => {
-				const sample = models.sample.build({
-					sensorId: 1,
-					dateReported: moment().subtract(1, 'hour').toDate(),
-					dateCreated: moment().subtract(1, 'hour').toDate(),
-					data: 20,
-					type: 0
-				});
-				sample.save().catch((err) => {
-					throw Error(err);
+		beforeEach((done) => {
+
+			models.sequelize.sync({force: true})
+				.then(() => {
+					const sensor = models.sensor.build({
+						id: 1,
+						name: 'Test 1',
+						latitude: 1,
+						longitude: 2,
+						serviceId: 0,
+						show: true
+					});
+					return sensor.save();
 				})
-			}).then(() => {
-				const sample = models.sample.build({
-					sensorId: 1,
-					dateReported: moment().subtract(2, 'hour').toDate(),
-					dateCreated: moment().subtract(2, 'hour').toDate(),
-					data: 10,
-					type: 0
-				});
-				sample.save().catch((err) => {
-					throw Error(err);
+				.then(() => {
+					const sample = models.sample.build({
+						sensorId: 1,
+						dateReported: moment().subtract(1, 'hour').toDate(),
+						dateCreated: moment().subtract(1, 'hour').toDate(),
+						data: 20,
+						type: 0
+					});
+					return sample.save();
 				})
-			})
+				.then(() => {
+					const sample = models.sample.build({
+						sensorId: 1,
+						dateReported: moment().subtract(2, 'hour').toDate(),
+						dateCreated: moment().subtract(2, 'hour').toDate(),
+						data: 10,
+						type: 0
+					});
+					return sample.save();
+				})
+				.then(() => {
+					done();
+				})
+				.catch(err => {
+					throw new Error(err);
+				});
 		});
 
 		it('Persists new sample', (done) => {
@@ -110,6 +121,6 @@ describe('Models', () => {
 				});
 		});
 
-	})
+	});
 
 });
