@@ -1,8 +1,10 @@
 'use strict';
 
-const models = require('../models');
 const express = require('express');
 const moment = require('moment');
+const _ = require('lodash');
+
+const models = require('../models');
 const router = express.Router();
 
 router.get('/api/sensors', (req, res) => {
@@ -41,11 +43,14 @@ router.get('/api/sensors/:id/data', (req, res, next) => {
 			const hours = Number(req.query.span) || 2;
 			return models.sample.findAll({
 				where: {
+					sensorId: req.params.id,
 					dateReported: {
-						sensorId: req.params.id,
 						$gte: moment().subtract(hours, 'hours').format()
 					}
-				}
+				},
+				order: [
+					['dateReported', 'ASC']
+				]
 			})
 		}
 	}).then(samples => {

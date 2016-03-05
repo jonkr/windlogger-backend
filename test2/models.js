@@ -7,9 +7,10 @@ const models = require('./../server2/models');
 describe('Models', () => {
 
 	beforeEach(done => {
-		models.sequelize.sync({force: true}).then(() => {
-			done();
-		});
+		models.sequelize.sync({force: true})
+			.then(() => {
+				done();
+			});
 	});
 
 	describe('Sensor', () => {
@@ -23,7 +24,8 @@ describe('Models', () => {
 				serviceId: 0,
 				show: true
 			});
-			sensor.save().then(() => {
+			sensor.save()
+				.then(() => {
 					done();
 				})
 				.catch(err => {
@@ -85,7 +87,7 @@ describe('Models', () => {
 				});
 		});
 
-		it('Persists new sample', (done) => {
+		it('Persists new samples', (done) => {
 			models.sample.findAll({
 					where: {
 						sensorId: 1
@@ -94,7 +96,7 @@ describe('Models', () => {
 						['dateReported', 'ASC']
 					]
 				})
-				.then((samples) => {
+				.then(samples => {
 					expect(samples.length).to.equal(2);
 					expect(samples[0].data).to.equal(10);
 					expect(samples[1].data).to.equal(20);
