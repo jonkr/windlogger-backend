@@ -35,7 +35,11 @@ function buildChartData(samples) {
 }
 
 router.get('/api/sensors', (req, res) => {
-	models.sensor.findAll().then(sensors => {
+	models.sensor.findAll({
+		where: {
+			show: true
+		}
+	}).then(sensors => {
 		res.send({data: sensors});
 	})
 });
