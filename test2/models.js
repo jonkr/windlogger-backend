@@ -64,9 +64,9 @@ describe('Models', () => {
 						sensorId: 1,
 						dateReported: moment().subtract(1, 'hour').toDate(),
 						dateCreated: moment().subtract(1, 'hour').toDate(),
-						data: 20,
-						type: 0
+						type: models.sample.TYPE2CODE.wind
 					});
+					sample.set('data', 2.2);
 					return sample.save();
 				})
 				.then(() => {
@@ -74,9 +74,9 @@ describe('Models', () => {
 						sensorId: 1,
 						dateReported: moment().subtract(2, 'hour').toDate(),
 						dateCreated: moment().subtract(2, 'hour').toDate(),
-						data: 10,
-						type: 0
+						type: models.sample.TYPE2CODE.wind
 					});
+					sample.set('data', 1.1);
 					return sample.save();
 				})
 				.then(() => {
@@ -98,13 +98,13 @@ describe('Models', () => {
 				})
 				.then(samples => {
 					expect(samples.length).to.equal(2);
-					expect(samples[0].data).to.equal(10);
-					expect(samples[1].data).to.equal(20);
+					expect(samples[0].data).to.equal(1.1);
+					expect(samples[1].data).to.equal(2.2);
 					done();
 				});
 		});
 
-		it('Correctly filters out old samples', (done) => {
+		it('Filters out old samples', (done) => {
 			models.sample.findAll({
 					where: {
 						sensorId: 1,
@@ -118,7 +118,7 @@ describe('Models', () => {
 				})
 				.then((samples) => {
 					expect(samples.length).to.equal(1);
-					expect(samples[0].data).to.equal(20);
+					expect(samples[0].data).to.equal(2.2);
 					done();
 				});
 		});
