@@ -73,6 +73,11 @@ module.exports = function (sequelize, DataTypes) {
 			}
 		}
 	}, {
+		getterMethods: {
+			timestamp: function () {
+				return this.dateReported.getTime();
+			}
+		},
 		classMethods: {
 			associate: function (models) {
 				sample.belongsTo(models.sensor, {
