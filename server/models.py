@@ -4,9 +4,10 @@ import calendar
 from collections import namedtuple
 import logging
 import datetime
+import json
 
 from sqlalchemy import (Column, Integer, DateTime, String, Float, ForeignKey,
-                                                PickleType, Boolean)
+                        Boolean)
 
 from db import Base
 from sqlalchemy.orm import relationship
@@ -39,7 +40,7 @@ class Sensor(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     service_id = Column(String)
-    last_samples = Column(PickleType)
+    _last_samples = Column(String)
     show = Column(Boolean, default=True)
 
     data = relationship('Sample', backref='sensor', cascade="all, delete-orphan")
@@ -82,6 +83,14 @@ class Sensor(Base):
                 lastSample=self.last_samples,
                 show=self.show
         )
+
+    @property
+    def last_samples(self):
+        return json.loads(self._last_samples)
+
+    @last_samples.setter
+    def last_samples(self, value):
+        self._last_samples = json.dumps(value)
 
     @property
     def has_recent_samples(self):
