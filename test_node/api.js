@@ -1,8 +1,8 @@
 'use strict';
 
-const app = require('../server2/app');
+const app = require('../server_node/app');
 const request = require('supertest');
-const models = require('../server2/models');
+const models = require('../server_node/models');
 const expect = require('chai').expect;
 
 describe('GET /api/sensors', () => {

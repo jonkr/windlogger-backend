@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const expect = require('chai').expect;
-const models = require('./../server2/models');
+const models = require('./../server_node/models');
 
 describe('Models', () => {
 
