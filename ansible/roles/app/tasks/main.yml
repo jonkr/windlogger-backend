@@ -99,13 +99,6 @@
     recurse=yes
   tags: deploy
 
-- name: render stackcollector run script
-  template:
-    src=RUN_STACK_COLLECTOR.sh.j2
-    dest="{{ app_dir }}/backend/RUN_STACK_COLLECTOR.sh"
-    owner="{{ user }}"
-    mode=u+x
-
 - name: render server run script
   template:
     src=RUN_SERVER.sh.j2

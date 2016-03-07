@@ -10,3 +10,5 @@ config_local.py
 db.dump
 
 credentials*
+
+node_modules/
