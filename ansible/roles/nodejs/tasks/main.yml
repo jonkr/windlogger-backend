@@ -1,0 +1,19 @@
+- name: check if nodejs is installed
+  stat: path=/usr/bin/nodejs
+  register: nodejs
+  tags: debug
+
+- set_fact:
+    NODEJS_MISSING: "{{ not nodejs.stat.exists }}"
+
+- name: install nodejs step 1
+  shell: "curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -"
+  when: NODEJS_MISSING
+
+- name: install nodejs step 2
+  apt:
+    pkg=nodejs
+    state=installed
+    update_cache=true
+    cache_valid_time={{ 6*60*60}}
+  when: NODEJS_MISSING

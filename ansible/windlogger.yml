@@ -8,5 +8,6 @@
     socket_file: /tmp/gunicorn_windlogger.sock
     DEBUG: false
   roles:
+    - { role: nodejs, tags: ['app'] }
     - { role: postgresql, tags: ['app'] }
     - { role: app, tags: ['app'] }
