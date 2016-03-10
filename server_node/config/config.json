@@ -16,7 +16,7 @@
     "logging": false
   },
   "production": {
-    "username": "root",
+    "username": "windlogger",
     "password": null,
     "database": "windlogger",
     "host": "127.0.0.1",

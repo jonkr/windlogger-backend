@@ -1,0 +1,5 @@
+- name: Install node process manager
+  npm: name=pm2 global=yes
+
+- name: Start pm2 on reboot
+  shell: pm2 startup ubuntu

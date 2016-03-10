@@ -79,6 +79,11 @@
     - update supervisor
     - restart windlogger
 
+- name: Install npm packages for backend
+  npm: path="{{ app_dir }}/backend" production=yes
+
+
+
 - name: copy credentials file
   copy:
     src="./../credentials.json"
@@ -122,6 +127,12 @@
 - name: set db uri for alembic
   set_fact:
     DB_URI: "postgresql+psycopg2://{{ user }}:{{ credentials.ansible_facts.postgresPassword }}@localhost/windlogger"
+
+- name: render node app production config
+  template:
+    src="config.json.j2"
+    dest="{{ app_dir }}/backend/server_node/config/config.json"
+    owner="{{ user }}"
 
 - debug: var=DB_URI
 

@@ -9,5 +9,6 @@
     DEBUG: false
   roles:
     - { role: nodejs, tags: ['app'] }
+    - { role: pm2, tags: ['app'] }
     - { role: postgresql, tags: ['app'] }
     - { role: app, tags: ['app'] }

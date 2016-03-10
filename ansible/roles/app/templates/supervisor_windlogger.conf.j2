@@ -2,13 +2,15 @@
 programs=windlogger-app,windlogger-poller-viva,windlogger-poller-weatherlink,windlogger-poller-smhi
 
 [program:windlogger-app]
-command={{ app_dir }}/backend/RUN_SERVER.sh
+command=/usr/bin/nodejs ./server_node/appContainer.js
 directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
 redirect_stderr=true
 stdout_logfile=/var/log/windlogger.log
 loglevel=info
+environment =
+    NODE_ENV=production
 
 [program:windlogger-poller-viva]
 command={{ app_dir }}/backend/venv/bin/python server/poller.py viva

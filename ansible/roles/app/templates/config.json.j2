@@ -1,0 +1,10 @@
+{
+  "production": {
+    "username": "{{ user }}",
+    "password": "{{ credentials.ansible_facts.postgresPassword }}",
+    "database": "windlogger",
+    "host": "127.0.0.1",
+    "dialect": "postgresql",
+    "logging": false
+  }
+}
