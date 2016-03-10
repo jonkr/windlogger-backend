@@ -2,7 +2,7 @@
 programs=windlogger-app,windlogger-poller-viva,windlogger-poller-weatherlink,windlogger-poller-smhi
 
 [program:windlogger-app]
-command=/usr/bin/nodejs ./server_node/appContainer.js
+command=/usr/bin/nodejs --harmony ./server_node/appContainer.js
 directory={{ app_dir }}/backend
 user={{ user }}
 autorestart=true
