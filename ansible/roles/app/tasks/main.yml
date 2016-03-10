@@ -5,8 +5,6 @@
   include_vars: "./../credentials.json"
   register: credentials
 
-- debug: var=credentials
-
 - name: install dependencies
   apt:
     pkg={{ item }}
@@ -134,8 +132,6 @@
     dest="{{ app_dir }}/backend/server_node/config/config.json"
     owner="{{ user }}"
 
-- debug: var=DB_URI
-
 - name: render alembic ini
   template:
     src="alembic.ini.j2"
@@ -146,8 +142,6 @@
   command: supervisorctl status
   become: yes
   register: supervisor_status
-
-- debug: var=supervisor_status
 
 - name: run initial DB migrations, if needed
   when: supervisor_status.stdout.find('windlogger') == -1
