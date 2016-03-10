@@ -1,5 +1,5 @@
-upstream flask_server_windlogger {
-	server unix:{{ socket_file }} fail_timeout=0;
+upstream windlogger_backend {
+	server localhost:3000 fail_timeout=0;
 }
 
 {% if domain != 'windlogger.se' %}
@@ -26,7 +26,7 @@ server {
 		proxy_redirect off;
 
 		if (!-f $request_filename) {
-			proxy_pass http://flask_server_windlogger;
+			proxy_pass http://windlogger_backend;
 			break;
 		}
 	}
