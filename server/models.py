@@ -39,20 +39,18 @@ class Sensor(Base):
     type = Column(Integer, nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
-    service_id = Column(String)
     _last_samples = Column(String)
     show = Column(Boolean, default=True)
 
     data = relationship('Sample', backref='sensor', cascade="all, delete-orphan")
 
-    def __init__(self, id, type, name, latitude, longitude, service_id=None):
+    def __init__(self, id, type, name, latitude, longitude):
         assert type in self.TYPES
         self.id = id
         self.type = self.TYPES[type]
         self.name = name
         self.latitude = latitude
         self.longitude = longitude
-        self.service_id = service_id
 
     @classmethod
     def get_all(cls):
