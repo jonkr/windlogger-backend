@@ -44,7 +44,9 @@ router.get('/api/sensors', (req, res) => {
 			show: true
 		}
 	}).then(sensors => {
-		res.send({data: sensors});
+		res.send({
+			data: sensors.map(sensor => { return sensor.format(); })
+		});
 	})
 });
 
@@ -59,7 +61,7 @@ router.get('/api/sensors/:id', (req, res) => {
 				message: `Sensor ${req.params.id} does not exist`
 			})
 		} else {
-			res.send(sensor);
+			res.send(sensor.format());
 		}
 	})
 });

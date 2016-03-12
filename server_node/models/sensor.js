@@ -15,10 +15,6 @@ module.exports = function (sequelize, DataTypes) {
 		name: DataTypes.STRING,
 		latitude: DataTypes.FLOAT,
 		longitude: DataTypes.FLOAT,
-		serviceId: {
-			type: DataTypes.INTEGER,
-			field: 'service_id'
-		},
 		show: DataTypes.BOOLEAN,
 		lastSample: {
 			type: DataTypes.STRING,
@@ -46,6 +42,17 @@ module.exports = function (sequelize, DataTypes) {
 		classMethods: {
 			associate: function (models) {
 				sensor.hasMany(models.sample)
+			}
+		},
+		instanceMethods: {
+			format: function () {
+				return {
+					name: this.name,
+					latitude: this.latitude,
+					longitude: this.longitude,
+					lastSample: this.lastSample,
+					type: this.type
+				}
 			}
 		},
 		timestamps: false
