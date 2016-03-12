@@ -102,13 +102,6 @@
     recurse=yes
   tags: deploy
 
-- name: render server run script
-  template:
-    src=RUN_SERVER.sh.j2
-    dest="{{ app_dir }}/backend/RUN_SERVER.sh"
-    owner="{{ user }}"
-    mode=u+x
-
 - name: install python environment
   pip:
     requirements="{{ app_dir }}/backend/requirements.prod"

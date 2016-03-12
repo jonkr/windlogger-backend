@@ -1,5 +1,5 @@
 run:
-	DEBUG=1 PYTHONPATH=./tools/perf:./server python server/app.py
+	NODE_ENV=development node --harmony server_node/appContainer.js
 
 run-gunicorn:
 	PYTHONPATH=./tools/perf:./server gunicorn server.appcontainer:app \
