@@ -1,5 +1,11 @@
 'use strict';
 
+const CODE2TYPE = {
+	1: 'weatherlink',
+	2: 'viva',
+	3: 'smhi'
+};
+
 module.exports = function (sequelize, DataTypes) {
 	const sensor = sequelize.define('sensor', {
 		id: {
@@ -22,6 +28,18 @@ module.exports = function (sequelize, DataTypes) {
 			},
 			set: function(value) {
 				this.setDataValue('lastSample', JSON.stringify(value));
+			}
+		},
+		type: {
+			type: DataTypes.INTEGER,
+			field: 'type',
+			get: function () {
+				const typeCode = this.getDataValue('type');
+				if (!CODE2TYPE.hasOwnProperty(typeCode)) {
+					throw new Error(`Unknown type code: ${typeCode}`);
+				} else {
+					return CODE2TYPE[typeCode];
+				}
 			}
 		}
 	}, {
