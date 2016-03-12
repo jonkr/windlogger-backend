@@ -21,8 +21,8 @@ deploy:
 cli:
 	PYTHONPATH=server PYTHONSTARTUP=tools/python_cli/startup.py bpython
 
-test-fast:
-	PYTHONPATH=server py.test test
+test-all:
+        NODE_ENV=test mocha test_node/	
 
 clone-db:
 	ansible-playbook ansible/db_backup.yml -i ansible/inventory
