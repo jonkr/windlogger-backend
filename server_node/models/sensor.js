@@ -51,7 +51,9 @@ module.exports = function (sequelize, DataTypes) {
 					latitude: this.latitude,
 					longitude: this.longitude,
 					lastSample: this.lastSample,
-					type: this.type
+					type: this.type,
+					id: this.id,
+					show: this.show
 				}
 			}
 		},
