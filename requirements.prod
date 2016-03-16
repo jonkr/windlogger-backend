@@ -8,5 +8,6 @@ schedule==0.3.2
 alembic==0.8.4
 py==1.4.31
 beautifulsoup4==4.4.1
+pytz==2016.1
 
 gunicorn==19.4.1
