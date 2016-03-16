@@ -4,6 +4,7 @@ import argparse
 import locale
 import logging
 import bs4
+import pytz
 import requests
 import datetime
 
@@ -16,6 +17,7 @@ MPH_2_MPS = 0.44704
 
 log = logging.getLogger(__name__)
 
+SERVICE_TIMEZONE = pytz.timezone('Europe/Stockholm')
 
 WEATHERLINK_BASE_URL = r'http://www.weatherlink.com/user/{user}/index.php?view=summary&headers=2'
 
@@ -65,7 +67,13 @@ SENSORS = [
 def create_sensors():
     for sensor in SENSORS:
         if not Sensor.get_by_id(sensor['id']):
-            s = Sensor(**sensor)
+            s = Sensor(
+                id=sensor['id'],
+                type=sensor['type'],
+                name=sensor['name'],
+                latitude=sensor['latitude'],
+                longitude=sensor['longitude']
+            )
             s.store()
 
 
@@ -90,7 +98,9 @@ def parse_timestamp(body):
     preamble = 'Current Conditions as of '
     assert stamp.startswith(preamble), 'Unknown timestamp preamble'
     stamp = stamp[len(preamble):]
-    return datetime.datetime.strptime(stamp, '%H:%M %A, %B %d, %Y')
+    dt = datetime.datetime.strptime(stamp, '%H:%M %A, %B %d, %Y')
+    return SERVICE_TIMEZONE.localize(dt).astimezone(pytz.utc).replace(
+        tzinfo=None)
 
 
 def _parse_speed_value(raw):
@@ -212,11 +222,11 @@ def _is_number(value):
     return type(value) == float or type(value) == int
 
 
-def poll_sensor(sensor):
+def poll_sensor(sensor, service_id):
 
     try:
 
-        url = WEATHERLINK_BASE_URL.format(user=sensor.service_id)
+        url = WEATHERLINK_BASE_URL.format(user=service_id)
 
         html = get_html(url)
         body = get_body(html)
@@ -251,7 +261,7 @@ def poll_all():
 
     for s in SENSORS:
         sensor = Sensor.get_by_id(s['id'])
-        updated = poll_sensor(sensor)
+        updated = poll_sensor(sensor, s['service_id'])
         if updated:
             updated_sensor_ids.add(s['id'])
 

@@ -13,8 +13,8 @@ from db import Base
 from sqlalchemy.orm import relationship
 import errors
 
-
 log = logging.getLogger(__name__)
+
 
 class Sensor(Base):
     __tablename__ = 'sensors'
@@ -24,14 +24,14 @@ class Sensor(Base):
     TYPE_SMHI = 'smhi'
 
     TYPES = {
-            TYPE_WEATHERLINK: 1,
-            TYPE_VIVA: 2,
-            TYPE_SMHI: 3
+        TYPE_WEATHERLINK: 1,
+        TYPE_VIVA: 2,
+        TYPE_SMHI: 3
     }
 
     CODE_2_TYPE = {
-            code: type
-            for type, code in list(TYPES.items())
+        code: type
+        for type, code in list(TYPES.items())
     }
 
     id = Column(Integer, primary_key=True)
@@ -42,7 +42,8 @@ class Sensor(Base):
     _last_samples = Column(String)
     show = Column(Boolean, default=True)
 
-    data = relationship('Sample', backref='sensor', cascade="all, delete-orphan")
+    data = relationship('Sample', backref='sensor',
+                        cascade="all, delete-orphan")
 
     def __init__(self, id, type, name, latitude, longitude):
         assert type in self.TYPES
@@ -73,13 +74,13 @@ class Sensor(Base):
 
     def format(self):
         return dict(
-                id=self.id,
-                name=self.name,
-                type=self.CODE_2_TYPE[self.type],
-                latitude=self.latitude,
-                longitude=self.longitude,
-                lastSample=self.last_samples,
-                show=self.show
+            id=self.id,
+            name=self.name,
+            type=self.CODE_2_TYPE[self.type],
+            latitude=self.latitude,
+            longitude=self.longitude,
+            lastSample=self.last_samples,
+            show=self.show
         )
 
     @property
@@ -113,15 +114,15 @@ class Sensor(Base):
             self.show = False
 
         if not too_old and s_speed and s_dir:
-            self.last_samples =  {
-                    'speed': {
-                            'value': s_speed.data,
-                            'stamp': s_speed.timestamp
-                    },
-                    'windDir': {
-                            'value': s_dir.data,
-                            'stamp': s_dir.timestamp
-                    }
+            self.last_samples = {
+                'speed': {
+                    'value': s_speed.data,
+                    'stamp': s_speed.timestamp
+                },
+                'windDir': {
+                    'value': s_dir.data,
+                    'stamp': s_dir.timestamp
+                }
             }
             self.show = True
         else:
@@ -131,11 +132,11 @@ class Sensor(Base):
 
     def __repr__(self):
         return '<Sensor: name={}, id={}, type={} >'.format(self.name, self.id,
-                self.CODE_2_TYPE[self.type])
+                                                           self.CODE_2_TYPE[
+                                                               self.type])
 
 
 class Sample(Base):
-
     __tablename__ = 'samples'
 
     Type = namedtuple('Type', ['code', 'factor', 'unit'])
@@ -146,22 +147,22 @@ class Sample(Base):
     TYPE_TEMPERATURE = 'temperature'
 
     TYPES = {
-            TYPE_WIND_SPEED: Type(1, 10.0, 'm/s'),
-            TYPE_WIND_GUST: Type(2, 10.0, 'm/s'),
-            TYPE_WIND_DIR: Type(3, 1.0, '°'),
-            TYPE_TEMPERATURE: Type(4, 10.0, '°C'),
+        TYPE_WIND_SPEED: Type(1, 10.0, 'm/s'),
+        TYPE_WIND_GUST: Type(2, 10.0, 'm/s'),
+        TYPE_WIND_DIR: Type(3, 1.0, '°'),
+        TYPE_TEMPERATURE: Type(4, 10.0, '°C'),
     }
 
     TYPE_2_FACTOR = {
-            t.code: t.factor
-            for _, t in list(TYPES.items())
-    }
+        t.code: t.factor
+        for _, t in list(TYPES.items())
+        }
 
     sensor_id = Column(Integer, ForeignKey('sensors.id'), primary_key=True)
     date_created = Column(DateTime,
-                                              nullable=False,
-                                              default=datetime.datetime.utcnow	,
-                                              index=True)
+                          nullable=False,
+                          default=datetime.datetime.utcnow,
+                          index=True)
     date_reported = Column(DateTime, primary_key=True)
     type = Column(Integer, primary_key=True)
     _data = Column(Integer)
@@ -180,32 +181,32 @@ class Sample(Base):
     @classmethod
     def exists(cls, sensor_id, type, date_reported):
         return bool(cls.query. \
-                                filter(cls.sensor_id == sensor_id). \
-                                filter(cls.type == type). \
-                                filter(cls.date_reported == date_reported).count())
+                    filter(cls.sensor_id == sensor_id). \
+                    filter(cls.type == type). \
+                    filter(cls.date_reported == date_reported).count())
 
     @classmethod
     def get_last(cls, id, type=None, hours=2):
         then = datetime.datetime.now() - datetime.timedelta(hours=hours)
         if type:
             return cls.query.filter(cls.type == cls.TYPES[type].code) \
-                    .filter(cls.sensor_id == id) \
-                    .filter(cls.date_reported >= then) \
-                    .order_by(cls.date_reported).all()
+                .filter(cls.sensor_id == id) \
+                .filter(cls.date_reported >= then) \
+                .order_by(cls.date_reported).all()
         else:
             return cls.query \
-                    .filter(cls.sensor_id == id) \
-                    .filter(cls.date_reported >= then) \
-                    .order_by(cls.date_reported).all()
+                .filter(cls.sensor_id == id) \
+                .filter(cls.date_reported >= then) \
+                .order_by(cls.date_reported).all()
 
     @classmethod
     def get_latest(cls, id, type):
         """Return the most recent sample"""
         then = datetime.datetime.utcnow() - datetime.timedelta(days=7)
         return cls.query.filter(cls.type == cls.TYPES[type].code) \
-                .filter(cls.sensor_id == id) \
-                .filter(cls.date_created >= then) \
-                .order_by(cls.date_reported.desc()).first()
+            .filter(cls.sensor_id == id) \
+            .filter(cls.date_created >= then) \
+            .order_by(cls.date_reported.desc()).first()
 
     @property
     def timestamp(self, millis=True):
@@ -215,8 +216,7 @@ class Sample(Base):
         else:
             return stamp
 
-
     def __repr__(self):
         return '<Sensor ID: {}, Type: {}, Value: {}, Reported: {}'.format(
-                self.sensor_id, self.type, self.data, self.date_reported
+            self.sensor_id, self.type, self.data, self.date_reported
         )

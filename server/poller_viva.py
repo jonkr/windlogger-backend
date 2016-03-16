@@ -6,6 +6,7 @@ import json
 import logging
 import datetime
 
+import pytz
 import requests
 
 import db
@@ -16,6 +17,8 @@ log = logging.getLogger(__name__)
 STATION_LIST_URL = r'https://services.viva.sjofartsverket.se:8080/' \
                    r'output/vivaoutputservice.svc/vivastation/'
 STATION_DATA_URL = STATION_LIST_URL + r'{station_id}'
+
+SERVICE_TIMEZONE = pytz.timezone('Europe/Stockholm')
 
 def get_all_sensors(session):
 
@@ -73,7 +76,9 @@ def store_sensors(session, sensors, clear_stale_sensors=True):
             Sensor.type == Sensor.TYPES[Sensor.TYPE_VIVA]).count())
 
 def _parse_update_time(time_string):
-    return datetime.datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S")
+    dt = datetime.datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S")
+    return SERVICE_TIMEZONE.localize(dt).astimezone(pytz.utc).replace(
+        tzinfo=None)
 
 def _type_of_interest(data_type):
     return data_type in ['Medelvind', 'Byvind', 'Riktning']
@@ -173,8 +178,7 @@ def poll_sensor(session, sensor_id):
 def store_samples(samples):
     updated_sensor_ids = set()
     for sample in samples:
-        if Sample.exists(sample.sensor_id,
-                                         sample.type, sample.date_reported):
+        if Sample.exists(sample.sensor_id, sample.type, sample.date_reported):
             continue
         sample.store()
         updated_sensor_ids.add(sample.sensor_id)

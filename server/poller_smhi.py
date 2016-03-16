@@ -3,6 +3,8 @@
 import argparse
 import logging
 import datetime
+
+import pytz
 import requests
 import time
 
@@ -11,6 +13,8 @@ from models import Sensor, Sample
 
 log = logging.getLogger(__name__)
 logging.getLogger("requests").setLevel(logging.WARNING)
+
+SERVICE_TIMEZONE = pytz.timezone('Europe/Stockholm')
 
 """
 
@@ -38,25 +42,26 @@ def get_all_sensors():
     assert resp.status_code == 200, 'Could not fetch station list'
     data = resp.json()
     stations = [
-            {
-                    'name': s['name'],
-                    'id': s['id'],
-                    'latitude': s['latitude'],
-                    'longitude': s['longitude'],
-                    'type': Sensor.TYPE_SMHI
-            }
-            for s in data['station']
-    ]
+        {
+            'name': s['name'],
+            'id': s['id'],
+            'latitude': s['latitude'],
+            'longitude': s['longitude'],
+            'type': Sensor.TYPE_SMHI
+        }
+        for s in data['station']
+        ]
 
     for station in stations:
         log.debug('{}: {}, {}'.format(
-                station['name'],
-                station['latitude'],
-                station['longitude']
+            station['name'],
+            station['latitude'],
+            station['longitude']
         ))
 
     log.info('SMHI: Retrieved SMHI station list: %s', len(stations))
     return stations
+
 
 def _sensor_transform(sensor):
     """Some SMHI sensors have names ending in '* A', without apparent use to
@@ -79,16 +84,15 @@ def store_sensors(sensors):
         sensor.store()
 
     log.info('%s SMHI stations in DB',
-     Sensor.query.filter(
-             Sensor.type == Sensor.TYPES[Sensor.TYPE_SMHI]).count())
+             Sensor.query.filter(
+                 Sensor.type == Sensor.TYPES[Sensor.TYPE_SMHI]).count())
 
 
 def poll_station(sensor):
-
     SMHI_PARAMS = {
-            'wind_speed': 4,
-            'wind_gust': 21,
-            'wind_direction': 3
+        'wind_speed': 4,
+        'wind_gust': 21,
+        'wind_direction': 3
     }
 
     samples = []
@@ -98,7 +102,7 @@ def poll_station(sensor):
         URL = 'http://opendata-download-metobs.smhi.se/api/version/1.0/' \
               'parameter/{param}/station/{station_id}/' \
               'period/latest-day/data.json'.format(
-                  param=param, station_id=sensor.id
+            param=param, station_id=sensor.id
         )
         resp = requests.get(URL)
         assert resp.status_code in [200, 404], 'Could not poll: {}'.format(URL)
@@ -120,11 +124,13 @@ def _create_sample(data, sensor_id, type_):
     last_sample = data['value'][-1]
     timestamp = last_sample['date'] / 1000
     log.debug('Got %s value for %s: %s', type_, sensor_id, last_sample['value'])
+    dt = datetime.datetime.fromtimestamp(timestamp)
+    dt = SERVICE_TIMEZONE.localize(dt).astimezone(pytz.utc).replace(tzinfo=None)
     return Sample(
-            sensor_id=sensor_id,
-            date_reported=datetime.datetime.fromtimestamp(timestamp),
-            type=type_,
-            data=float(last_sample['value'])
+        sensor_id=sensor_id,
+        date_reported=dt,
+        type=type_,
+        data=float(last_sample['value'])
     )
 
 
@@ -137,10 +143,11 @@ def store_samples(samples):
 
         sample.store()
         log.info('SMHI: Stored sample type %s for sensor %s', sample.type,
-                                 sample.sensor_id)
+                 sample.sensor_id)
         updated_sensor_ids.add(sample.sensor_id)
 
     return updated_sensor_ids
+
 
 def poll_all(poll_hidden=False):
     t0 = time.time()
@@ -153,9 +160,9 @@ def poll_all(poll_hidden=False):
     dur = time.time() - t0
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log.info('SMHI: Poll completed at %s in %s s.\n'
-                     'Polled %s sensors.\n'
-                     'Updated %s values.',
-                     now, '{:.1f}'.format(dur), len(sensors), len(updated_sensor_ids))
+             'Polled %s sensors.\n'
+             'Updated %s values.',
+             now, '{:.1f}'.format(dur), len(sensors), len(updated_sensor_ids))
     return updated_sensor_ids
 
 
@@ -171,12 +178,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-            'mode',
-            help='Operation to run',
-            choices=[
-                    'get-sensors',
-                    'poll-all'
-            ])
+        'mode',
+        help='Operation to run',
+        choices=[
+            'get-sensors',
+            'poll-all'
+        ])
 
     args = parser.parse_args()
 
