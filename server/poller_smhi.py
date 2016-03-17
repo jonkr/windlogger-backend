@@ -14,7 +14,7 @@ from models import Sensor, Sample
 log = logging.getLogger(__name__)
 logging.getLogger("requests").setLevel(logging.WARNING)
 
-SERVICE_TIMEZONE = pytz.timezone('Europe/Stockholm')
+SERVICE_TIMEZONE = pytz.utc
 
 """
 
