@@ -168,3 +168,17 @@
     minute="0"
     hour="4"
     job="supervisorctl restart windlogger:"
+
+- name: render db sample purge script
+  template:
+    src=RUN_PURGE_SAMPLES.sh.j2
+    dest="{{ app_dir }}/backend/RUN_PURGE_SAMPLES.sh"
+    owner="{{ user }}"
+    mode=u+x
+
+- name: nightly clean-up of old samples
+  cron:
+    name="windlogger sample purge"
+    minute="0"
+    hour="3"
+    job="{{ app_dir }}/backend/RUN_PURGE_SAMPLES.sh"

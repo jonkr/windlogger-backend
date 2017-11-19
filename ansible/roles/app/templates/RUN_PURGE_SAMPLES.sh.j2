@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export PGPASSWORD={{ credentials.ansible_facts.postgresPassword }}
+psql -U windlogger -d windlogger -h localhost -c 'DELETE FROM samples WHERE created_date < now() - interval \'3 months\''
