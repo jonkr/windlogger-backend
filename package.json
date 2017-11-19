@@ -16,11 +16,11 @@
     "sequelize": "^3.19.3"
   },
   "devDependencies": {
-    "mocha": "^2.4.5",
-    "supertest": "^1.2.0",
-    "sqlite3": "^3.1.1",
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
     "sequelize-cli": "^2.3.1",
-    "chai": "^3.5.0"
+    "sqlite3": "^3.1.1",
+    "supertest": "^1.2.0"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha test_node/"

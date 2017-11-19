@@ -22,11 +22,11 @@ cli:
 	PYTHONPATH=server PYTHONSTARTUP=tools/python_cli/startup.py bpython
 
 test-all:
-        NODE_ENV=test mocha test_node/	
+	NODE_ENV=test mocha test_node/
 
 clone-db:
 	ansible-playbook ansible/db_backup.yml -i ansible/inventory
-	scp awsnano:/tmp/db.dump .
+	scp windlogger:/tmp/db.dump .
 
 populate-db-from-dump:
 	dropdb windlogger

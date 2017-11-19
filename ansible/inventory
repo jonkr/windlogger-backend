@@ -1,7 +1,7 @@
 awsnano         ansible_ssh_user=ubuntu
 
 [webserver-awsnano]
-awsnano
+windlogger
 
 [webservers]
-awsnano
+windlogger
